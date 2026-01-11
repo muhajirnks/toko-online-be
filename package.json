@@ -3,11 +3,11 @@
   "version": "1.0.0",
   "description": "",
   "scripts": {
-    "build": "rm -rf dist/ && tsc && tsc-alias && mv public/ dist/public && cp vercel.json dist/ && cp package.json dist/",
-    "build-fe": "rm -rf public/ && cd ../fe && npm run build && cp -r dist/ ../be/public/ && cd ../be/public && npm init -y && npm pkg set type=\"module\" && cd ..",
+    "build": "rm -rf dist/ && tsc && tsc-alias && cp -r public/ dist/public && cp vercel.json dist/ && cp package.json dist/",
+    "build-fe": "rm -rf public/ && cd ../fe && pnpm run build && cp -r dist/ ../be/public/ && cd ../be/public && pnpm init && pnpm pkg set type=\"module\" && cd ..",
     "deploy": "gh-pages -d dist",
     "dev": "nodemon index.ts",
-    "predeploy": "npm run build-fe && npm run build",
+    "predeploy": "pnpm run build-fe && pnpm run build",
     "start": "node dist/index.js"
   },
   "keywords": [],

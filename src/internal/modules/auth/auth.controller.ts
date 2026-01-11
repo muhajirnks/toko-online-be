@@ -27,7 +27,7 @@ export const loginHandler = async (req: Request, res: Response) => {
 };
 
 export const refreshHandler = async (req: Request, res: Response) => {
-   const { refresh_token } = await refreshSchema.validate(req.body);
+   const { refresh_token } = await refreshSchema.validate({refresh_token: req.cookies.refresh_token});
 
    const { token, data } = await refreshService(refresh_token);
 
@@ -45,7 +45,7 @@ export const getProfileHandler = async (req: Request, res: Response) => {
 };
 
 export const logoutHandler = async (req: Request, res: Response) => {
-   const { refresh_token } = await logoutSchema.validate(req.body);
+   const { refresh_token } = await logoutSchema.validate({refresh_token: req.cookies.refresh_token});
 
    await logoutService(refresh_token);
 

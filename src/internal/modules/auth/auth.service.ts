@@ -2,9 +2,10 @@ import { createToken, createUser, deleteToken, findByEmail, findToken } from "./
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import { NewBadRequestError, NewConflictError } from "@/pkg/apperror/appError";
+import { UserSchema } from "@/internal/models/user";
 
-export const registerService = async (data: any) => {
-   const existUser = await findByEmail(data.email);
+export const registerService = async (data: Partial<UserSchema>) => {
+   const existUser = await findByEmail(data.email!);
 
    if (existUser) {
       throw NewConflictError("Email already exist");
@@ -13,7 +14,7 @@ export const registerService = async (data: any) => {
    const user = await createUser(data);
 
    const userObj = user.toObject();
-   delete userObj.password;
+   delete (userObj as any).password;
 
    return userObj;
 };
