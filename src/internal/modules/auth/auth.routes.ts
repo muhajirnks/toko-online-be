@@ -3,13 +3,17 @@ import {
    getProfileHandler,
    loginHandler,
    logoutHandler,
+   refreshHandler,
+   registerHandler,
 } from "./auth.controller";
-import authMiddleware from "@/middleware/authMiddleware";
+import authMiddleware from "@/internal/middleware/auth";
 
 const router = Router();
 
+router.post("/register", registerHandler);
 router.post("/login", loginHandler);
+router.post("/refresh", refreshHandler);
 router.get("/profile", authMiddleware, getProfileHandler);
-router.get("/logout", logoutHandler);
+router.post("/logout", logoutHandler);
 
 export default router;

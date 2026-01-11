@@ -1,13 +1,12 @@
 import { Schema, model } from "mongoose";
-import validator from "validator";
 import bcrypt from "bcrypt";
 
 export interface UserSchema {
-   name?: string;
-   email?: string;
+   name: string;
+   email: string;
    password?: string;
-   updatedAt?: NativeDate;
-   createdAt?: NativeDate;
+   updatedAt: NativeDate;
+   createdAt: NativeDate;
 }
 
 const userSchema = new Schema<UserSchema>(
@@ -22,7 +21,6 @@ const userSchema = new Schema<UserSchema>(
          unique: true,
          trim: true,
          lowercase: true,
-         validate: [validator.isEmail, "Invalid email"],
       },
       password: {
          type: String,

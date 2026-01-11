@@ -8,11 +8,14 @@ import { config } from "dotenv";
 config({ path: ".env" });
 
 import path from "path";
-import "@/config/cloudinary";
-import initV1Route from "@/routes/v1";
+import "@/internal/config/cloudinary";
+import initV1Route from "@/internal/routes/v1";
+import globalErrorHandler from "@/internal/middleware/globalError";
 
 const app = express();
 const port = process.env.PORT || 3001;
+
+app.use(globalErrorHandler());
 
 // cors
 app.use(cors())
@@ -35,6 +38,7 @@ app.use(express.static(path.join(__dirname, "./public")));
 app.get("*", (req, res) => {
    res.sendFile(path.join(__dirname, "./public/index.html"));
 });
+
 
 // MongoDB Connect
 mongoose.connect(process.env.MONGO_URI!);
