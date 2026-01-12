@@ -5,7 +5,7 @@ export const createProductSchema = yup.object({
    description: yup.string().required(),
    price: yup.number().required().min(0),
    stock: yup.number().required().min(0),
-   image: yup.string().optional(),
+   image: yup.mixed().optional(),
    category: yup.string().optional(),
 });
 
@@ -14,6 +14,6 @@ export const updateProductSchema = yup.object({
    description: yup.string().optional(),
    price: yup.number().optional().min(0),
    stock: yup.number().optional().min(0),
-   image: yup.string().optional(),
+   image: yup.mixed().optional(),
    category: yup.string().optional(),
 });

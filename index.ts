@@ -18,10 +18,18 @@ initMinio();
 const app = express();
 const port = process.env.PORT || 3001;
 
-app.use(globalErrorHandler());
-
 // cors
-app.use(cors());
+const allowedOrigins = ['http://localhost:5173', 'http://localhost:80', 'http://localhost'];
+app.use(cors({
+   credentials: true,
+   origin: (origin, callback) => {
+      if (!origin || allowedOrigins.includes(origin)) {
+         callback(null, origin);
+      } else {
+         callback(new Error('Not allowed by CORS'));
+      }
+   }
+}));
 
 // gzip
 app.use(compression());
@@ -37,8 +45,11 @@ app.use(morgan("tiny"));
 // api v1
 app.use("/api/v1", initV1Route());
 
-// FrontEnd / Static
+// Static
 app.use(express.static(path.join(__dirname, "./public")));
+
+// Global Error Handler
+app.use(globalErrorHandler);
 
 connection.on("open", () => {
    app.listen(port, () => {
