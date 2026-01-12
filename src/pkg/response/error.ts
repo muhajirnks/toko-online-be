@@ -1,5 +1,4 @@
 import { Response } from "express";
-import { Decamelized, decamelizeKeys } from "humps";
 
 export interface ErrorResponse {
     message: string
@@ -7,11 +6,11 @@ export interface ErrorResponse {
 
 export interface ValidationErrorResponse {
     message: string
-    errors: Decamelized<Record<string, string[]>>
+    errors: Record<string, string[]>
 }
 
 export interface InternalErrorResponse {
-    request_id: string;
+    requestId: string;
     message: string
 }
 
@@ -25,7 +24,7 @@ export const errorResponse = (res: Response, msg: string, code: number) => {
 export const validationErrorResponse = (res: Response, msg: string, errors: Record<string, string[]>) => {
     const jsonObj: ValidationErrorResponse = {
         message: msg,
-        errors: decamelizeKeys(errors) as Decamelized<Record<string, string[]>>,
+        errors,
     }
 
     return res.status(422).json(jsonObj)
@@ -33,7 +32,7 @@ export const validationErrorResponse = (res: Response, msg: string, errors: Reco
 
 export const internalErrorResponse = (res: Response, msg: string, requestId: string) => {
     const jsonObj: InternalErrorResponse = {
-        request_id: requestId,
+        requestId,
         message: msg,
     }
 

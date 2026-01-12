@@ -76,7 +76,7 @@ const seed = async () => {
             {
                name: "Smartphone X",
                description: "Latest model smartphone with high-end specs.",
-               price: 999,
+               price: 14000000,
                stock: 50,
                category: electronics._id,
                sellerId: seller._id,
@@ -85,7 +85,7 @@ const seed = async () => {
             {
                name: "Laptop Pro",
                description: "Powerful laptop for professionals.",
-               price: 1500,
+               price: 15000000,
                stock: 20,
                category: electronics._id,
                sellerId: seller._id,
@@ -94,7 +94,7 @@ const seed = async () => {
             {
                name: "Coffee Maker",
                description: "Automatic coffee maker for your morning brew.",
-               price: 80,
+               price: 4000000,
                stock: 100,
                category: home._id,
                sellerId: seller._id,

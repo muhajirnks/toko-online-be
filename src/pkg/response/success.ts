@@ -1,6 +1,5 @@
 import { Response } from "express";
 import { PaginationResult } from "../pagination/models";
-import { decamelizeKeys } from "humps";
 
 export interface SuccessResponse<T> {
    message?: string;
@@ -27,7 +26,7 @@ export const successResponse = <T>(
 
    return res.status(200).json({
       message,
-      data: data ? decamelizeKeys(data) : undefined,
+      data: data ? data : undefined,
    });
 };
 
@@ -35,7 +34,7 @@ export const paginationResponse = <T>(
    res: Response,
    data: PaginationResult<T>
 ) => {
-   return res.status(200).json(decamelizeKeys(data));
+   return res.status(200).json(data);
 };
 
 export const createdResponse = <T>(
@@ -46,14 +45,11 @@ export const createdResponse = <T>(
 
    return res.status(201).json({
       message,
-      data: data ? decamelizeKeys(data) : undefined,
+      data: data ? data : undefined,
    });
 };
 
-export const tokenResponse = <T>(
-   res: Response,
-   payload: TokenResponse<T>
-) => {
+export const tokenResponse = <T>(res: Response, payload: TokenResponse<T>) => {
    const { data, message, token } = payload;
 
    res.cookie("access_token", token.accessToken, {
@@ -72,6 +68,6 @@ export const tokenResponse = <T>(
 
    return res.status(201).json({
       message,
-      data: decamelizeKeys(data),
+      data: data,
    });
 };

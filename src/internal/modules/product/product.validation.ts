@@ -18,7 +18,7 @@ export const createProductSchema = yup.object({
    price: yup.number().required().min(0),
    stock: yup.number().required().min(0),
    image: yup.mixed().required(),
-   category: yup.string().optional(),
+   categoryId: yup.string().required(),
 });
 
 export const updateProductSchema = yup.object({
@@ -27,7 +27,7 @@ export const updateProductSchema = yup.object({
    price: yup.number().required().min(0),
    stock: yup.number().required().min(0),
    image: yup.mixed().optional(),
-   category: yup.string().optional(),
+   categoryId: yup.string().required(),
 });
 
 export type ListProductRequest = yup.InferType<typeof listProductSchema>

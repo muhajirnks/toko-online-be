@@ -31,6 +31,8 @@ export const getProductByIdService = async (id: string) => {
    if (!product) {
       throw NewNotFoundError("Product not found");
    }
+
+   product.imageUrl = await presignGetUrl(product.imageUrl)
    return product;
 };
 
@@ -40,15 +42,14 @@ export const createProductService = async (
 ) => {
    const product: Partial<ProductSchema> = {
       name: data.name,
-      category: new mongoose.Types.ObjectId(data.category),
+      category: new mongoose.Types.ObjectId(data.categoryId),
       description: data.description,
       price: data.price,
-      sellerId: new mongoose.Types.ObjectId(user.id),
+      seller: new mongoose.Types.ObjectId(user.id),
       stock: data.stock,
    }
-   if (data.image) {
-      product.imageUrl = await uploadFile(data.image as any, "products");
-   }
+   product.imageUrl = await uploadFile(data.image as any, "products");
+   product.imageUrl = await presignGetUrl(product.imageUrl)
    return await createProduct(product);
 };
 
@@ -62,7 +63,7 @@ export const updateProductService = async (
       throw NewNotFoundError("Product not found");
    }
 
-   if (product.sellerId.toString() !== user.id) {
+   if (product.seller.toString() !== user.id) {
       throw NewForbiddenError("You are not authorized to update this product");
    }
 
@@ -71,10 +72,10 @@ export const updateProductService = async (
    }
 
    product.name = data.name;
-   product.category = new mongoose.Types.ObjectId(data.category);
+   product.category = new mongoose.Types.ObjectId(data.categoryId);
    product.description = data.description;
    product.price = data.price;
-   product.sellerId = new mongoose.Types.ObjectId(user.id);
+   product.seller = new mongoose.Types.ObjectId(user.id);
    product.stock = data.stock;
 
    return await updateProduct(id, product);
@@ -86,7 +87,7 @@ export const deleteProductService = async (id: string, sellerId: string) => {
       throw NewNotFoundError("Product not found");
    }
 
-   if (product.sellerId.toString() !== sellerId) {
+   if (product.seller.toString() !== sellerId) {
       throw NewForbiddenError("You are not authorized to delete this product");
    }
 

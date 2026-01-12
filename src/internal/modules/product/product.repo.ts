@@ -2,11 +2,11 @@ import Product, { ProductSchema } from "@/internal/models/product";
 import { ListProductRequest } from "./product.validation";
 
 export const findAllProducts = async (query: ListProductRequest) => {
-   return await Product.find().populate("category").populate("sellerId").lean().exec();
+   return await Product.find().populate("category").populate("seller").lean().exec();
 };
 
 export const findProductById = async (id: string) => {
-   return await Product.findById(id).populate("category").populate("sellerId").lean().exec();
+   return await Product.findById(id).populate("category").populate("seller").lean().exec();
 };
 
 export const createProduct = async (data: Partial<ProductSchema>) => {

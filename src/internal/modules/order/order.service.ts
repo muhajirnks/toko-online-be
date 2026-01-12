@@ -57,10 +57,13 @@ export const getOrderByIdService = async (
       throw NewNotFoundError("Order not found");
    }
    if (user.role === "seller") {
-      const isSellerOfAnyItem = order.items.some(
-         (item: any) =>
-            item.productId?.sellerId?.toString() === user._id.toString()
-      );
+      const isSellerOfAnyItem = order.items.some((item) => {
+         if (typeof item.product === "object" && "seller" in item.product) {
+            return item.product.seller.toString() === user._id.toString();
+         }
+         return false;
+      });
+
       if (!isSellerOfAnyItem) {
          throw NewNotFoundError("Order not found");
       }
@@ -98,14 +101,16 @@ export const createOrderService = async (
       });
 
       // Update stock
-      await updateProduct(product._id.toString(), { stock: product.stock - item.quantity });
+      await updateProduct(product._id.toString(), {
+         stock: product.stock - item.quantity,
+      });
    }
 
    const orderData: Partial<OrderSchema> = {
       userId: new mongoose.Types.ObjectId(user.id),
       customerName,
       customerEmail,
-      items: orderItems,
+      items: orderItems.map((item) => ({ ...item, product: item.productId })),
       totalAmount,
       status: "pending",
    };

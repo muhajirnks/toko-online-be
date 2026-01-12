@@ -41,7 +41,6 @@ export const refreshHandler = async (req: Request, res: Response) => {
 };
 
 export const getProfileHandler = async (req: Request, res: Response) => {
-   console.log(req.user?.toObject())
    successResponse(res, {
       data: req.user?.toObject(),
    });
