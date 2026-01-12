@@ -8,6 +8,7 @@ import {
    updateProductService,
 } from "./product.service";
 import { createdResponse, successResponse } from "@/pkg/response/success";
+import { ProductSchema } from "@/internal/models/product";
 
 export const getAllProductsHandler = async (req: Request, res: Response) => {
    const data = await getAllProductsService();
@@ -22,14 +23,14 @@ export const getProductByIdHandler = async (req: Request, res: Response) => {
 
 export const createProductHandler = async (req: Request, res: Response) => {
    const body = await createProductSchema.validate(req.body);
-   const data = await createProductService(body);
+   const data = await createProductService(body as Partial<ProductSchema>);
    createdResponse(res, { data, message: "Product created successfully" });
 };
 
 export const updateProductHandler = async (req: Request, res: Response) => {
    const id = req.params.id as string;
    const body = await updateProductSchema.validate(req.body);
-   const data = await updateProductService(id, body);
+   const data = await updateProductService(id, body as Partial<ProductSchema>);
    successResponse(res, { data, message: "Product updated successfully" });
 };
 
