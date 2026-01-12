@@ -1,10 +1,11 @@
 import { Document, Schema, model } from "mongoose";
 import bcrypt from "bcrypt";
 
-export interface UserSchema extends Document {
+export interface UserSchema {
    name: string;
    email: string;
    password?: string;
+   role: "admin" | "seller" | "buyer";
    updatedAt: NativeDate;
    createdAt: NativeDate;
 }
@@ -27,6 +28,11 @@ const userSchema = new Schema<UserSchema>(
          required: true,
          minLength: 8,
          trim: true,
+      },
+      role: {
+         type: String,
+         enum: ["admin", "seller", "buyer"],
+         default: "buyer",
       },
    },
    { timestamps: true, versionKey: false }

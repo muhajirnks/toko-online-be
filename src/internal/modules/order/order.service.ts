@@ -1,4 +1,11 @@
-import { createOrder, findAllOrders, findOrderById, updateOrder } from "./order.repo";
+import {
+   createOrder,
+   findAllOrders,
+   findOrderById,
+   findOrdersBySeller,
+   findOrdersByUser,
+   updateOrder,
+} from "./order.repo";
 import { findProductById, updateProduct } from "../product/product.repo";
 import { NewBadRequestError, NewNotFoundError } from "@/pkg/apperror/appError";
 
@@ -12,15 +19,35 @@ export interface CreateOrderInput {
    userId?: string;
 }
 
-export const getAllOrdersService = async () => {
-   return await findAllOrders();
+export const getAllOrdersService = async (user: any) => {
+   if (user.role === "admin") {
+      return await findAllOrders();
+   }
+   if (user.role === "seller") {
+      return await findOrdersBySeller(user._id);
+   }
+   return await findOrdersByUser(user._id);
 };
 
-export const getOrderByIdService = async (id: string) => {
+export const getOrderByIdService = async (id: string, user: any) => {
    const order = await findOrderById(id);
    if (!order) {
       throw NewNotFoundError("Order not found");
    }
+
+   // Check if user has access to this order
+   if (user.role === "buyer" && order.userId?.toString() !== user._id.toString()) {
+      throw NewNotFoundError("Order not found");
+   }
+   if (user.role === "seller") {
+      const isSellerOfAnyItem = order.items.some(
+         (item: any) => item.productId?.sellerId?.toString() === user._id.toString()
+      );
+      if (!isSellerOfAnyItem) {
+         throw NewNotFoundError("Order not found");
+      }
+   }
+
    return order;
 };
 
@@ -65,11 +92,18 @@ export const createOrderService = async (data: CreateOrderInput) => {
    return await createOrder(orderData);
 };
 
-export const updateOrderStatusService = async (id: string, status: string) => {
+export const updateOrderService = async (id: string, data: any) => {
    const order = await findOrderById(id);
    if (!order) {
       throw NewNotFoundError("Order not found");
    }
+   return await updateOrder(id, data);
+};
 
-   return await updateOrder(id, { status });
+export const deleteOrderService = async (id: string) => {
+   const order = await findOrderById(id);
+   if (!order) {
+      throw NewNotFoundError("Order not found");
+   }
+   return await updateOrder(id, { status: "cancelled" } as any); // Soft delete or cancel
 };

@@ -6,11 +6,14 @@ import { loginSchema, logoutSchema, refreshSchema, registerSchema } from "./auth
 export const registerHandler = async (req: Request, res: Response) => {
    const body = await registerSchema.validate(req.body);
 
-   const data = await registerService(body);
+   const user = await registerService(body as any);
+
+   const userObj = user.toObject();
+   delete (userObj as any).password;
 
    createdResponse(res, {
-      data,
-      message: "Register success",
+      data: userObj,
+      message: "User registered successfully",
    });
 };
 

@@ -3,6 +3,7 @@ import authRoutes from "@/internal/modules/auth/auth.routes";
 import productRoutes from "@/internal/modules/product/product.routes";
 import orderRoutes from "@/internal/modules/order/order.routes";
 import categoryRoutes from "@/internal/modules/category/category.routes";
+import userRoutes from "@/internal/modules/user/user.routes";
 
 const initV1Route = () => {
    const router = Router();
@@ -11,6 +12,7 @@ const initV1Route = () => {
    router.use("/products", productRoutes);
    router.use("/orders", orderRoutes);
    router.use("/categories", categoryRoutes);
+   router.use("/users", userRoutes);
 
    return router;
 };

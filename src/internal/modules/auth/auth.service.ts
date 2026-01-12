@@ -13,10 +13,7 @@ export const registerService = async (data: Partial<UserSchema>) => {
 
    const user = await createUser(data);
 
-   const userObj = user.toObject();
-   delete (userObj as any).password;
-
-   return userObj;
+   return user;
 };
 
 export const loginService = async (email: string, password: string) => {

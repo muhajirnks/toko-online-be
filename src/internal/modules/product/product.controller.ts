@@ -8,7 +8,6 @@ import {
    updateProductService,
 } from "./product.service";
 import { createdResponse, successResponse } from "@/pkg/response/success";
-import { ProductSchema } from "@/internal/models/product";
 
 export const getAllProductsHandler = async (req: Request, res: Response) => {
    const data = await getAllProductsService();
@@ -23,19 +22,22 @@ export const getProductByIdHandler = async (req: Request, res: Response) => {
 
 export const createProductHandler = async (req: Request, res: Response) => {
    const body = await createProductSchema.validate(req.body);
-   const data = await createProductService(body as Partial<ProductSchema>);
+   const data = await createProductService({
+      ...body,
+      sellerId: req.user!.id,
+   } as any);
    createdResponse(res, { data, message: "Product created successfully" });
 };
 
 export const updateProductHandler = async (req: Request, res: Response) => {
    const id = req.params.id as string;
    const body = await updateProductSchema.validate(req.body);
-   const data = await updateProductService(id, body as Partial<ProductSchema>);
+   const data = await updateProductService(id, body as any, (req.user as any)._id);
    successResponse(res, { data, message: "Product updated successfully" });
 };
 
 export const deleteProductHandler = async (req: Request, res: Response) => {
    const id = req.params.id as string;
-   await deleteProductService(id);
+   await deleteProductService(id, req.user!.id);
    successResponse(res, { message: "Product deleted successfully" });
 };

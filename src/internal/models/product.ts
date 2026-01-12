@@ -7,6 +7,7 @@ export interface ProductSchema extends Document {
    stock: number;
    image?: string;
    category?: mongoose.Types.ObjectId;
+   sellerId: mongoose.Types.ObjectId;
    createdAt: Date;
    updatedAt: Date;
 }
@@ -19,6 +20,7 @@ const ProductSchema: Schema = new Schema(
       stock: { type: Number, required: true, default: 0 },
       image: { type: String },
       category: { type: Schema.Types.ObjectId, ref: "Category" },
+      sellerId: { type: Schema.Types.ObjectId, ref: "User", required: true },
    },
    {
       timestamps: true,
