@@ -1,9 +1,11 @@
-import mongoose from "mongoose";
 import { config } from "dotenv";
 import User from "@/internal/models/user";
 import Category from "@/internal/models/category";
 import Product from "@/internal/models/product";
 import { connectDB } from "@/internal/config/database";
+import { initMinio, uploadFile } from "@/pkg/minio/minio";
+import fs from "fs";
+import path from "path";
 
 config();
 
@@ -13,6 +15,15 @@ const seed = async () => {
 
       await new Promise((resolve) => connection.on("open", resolve));
       console.log("Connected to database for seeding...");
+      await initMinio();
+      const publicImagePath = path.resolve("./public/product.jpg");
+      const imageBuffer = fs.readFileSync(publicImagePath);
+      const imageUrl = await uploadFile({
+         originalname: "product.jpg",
+         buffer: imageBuffer,
+         size: imageBuffer.length,
+         mimetype: "image/jpeg",
+      } as any, "products");
 
       // Clear existing data
       await User.deleteMany({});
@@ -69,6 +80,7 @@ const seed = async () => {
                stock: 50,
                category: electronics._id,
                sellerId: seller._id,
+               imageUrl: imageUrl,
             },
             {
                name: "Laptop Pro",
@@ -77,6 +89,7 @@ const seed = async () => {
                stock: 20,
                category: electronics._id,
                sellerId: seller._id,
+               imageUrl: imageUrl,
             },
             {
                name: "Coffee Maker",
@@ -85,6 +98,7 @@ const seed = async () => {
                stock: 100,
                category: home._id,
                sellerId: seller._id,
+               imageUrl: imageUrl,
             },
          ]);
          console.log(`Seeded ${products.length} products.`);

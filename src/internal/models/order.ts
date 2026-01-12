@@ -1,4 +1,4 @@
-import mongoose, { Schema, Document } from "mongoose";
+import mongoose, { Schema } from "mongoose";
 
 export interface OrderItemSchema {
    productId: mongoose.Types.ObjectId;
@@ -7,7 +7,7 @@ export interface OrderItemSchema {
    price: number;
 }
 
-export interface OrderSchema extends Document {
+export interface OrderSchema {
    userId?: mongoose.Types.ObjectId;
    customerName: string;
    customerEmail: string;

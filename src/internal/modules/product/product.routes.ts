@@ -2,7 +2,7 @@ import { Router } from "express";
 import {
    createProductHandler,
    deleteProductHandler,
-   getAllProductsHandler,
+   listProductsHandler,
    getProductByIdHandler,
    updateProductHandler,
 } from "./product.controller";
@@ -13,7 +13,7 @@ import { asyncHandler } from "@/internal/middleware/async";
 const productRoutes = Router();
 
 // Everyone can view products
-productRoutes.get("/", asyncHandler(getAllProductsHandler));
+productRoutes.get("/", asyncHandler(listProductsHandler));
 productRoutes.get("/:id", asyncHandler(getProductByIdHandler));
 
 // Only seller can manage products

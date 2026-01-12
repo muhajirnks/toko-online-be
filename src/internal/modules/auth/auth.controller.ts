@@ -8,11 +8,10 @@ export const registerHandler = async (req: Request, res: Response) => {
 
    const user = await registerService(body as any);
 
-   const userObj = user.toObject();
-   delete (userObj as any).password;
+   delete user.password;
 
    createdResponse(res, {
-      data: userObj,
+      data: user,
       message: "User registered successfully",
    });
 };
@@ -42,8 +41,9 @@ export const refreshHandler = async (req: Request, res: Response) => {
 };
 
 export const getProfileHandler = async (req: Request, res: Response) => {
+   console.log(req.user?.toObject())
    successResponse(res, {
-      data: req.user,
+      data: req.user?.toObject(),
    });
 };
 

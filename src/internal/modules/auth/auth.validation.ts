@@ -25,3 +25,8 @@ export const refreshSchema = yup.object({
 export const logoutSchema = yup.object({
    refresh_token: yup.string().required("Refresh token is required"),
 });
+
+export type RegisterRequest = yup.InferType<typeof registerSchema>
+export type LoginRequest = yup.InferType<typeof loginSchema>
+export type RefreshRequest = yup.InferType<typeof refreshSchema>
+export type LogoutRequest = yup.InferType<typeof logoutSchema>

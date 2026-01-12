@@ -1,14 +1,16 @@
 import { Request, Response } from "express";
 import {
    deleteUserService,
-   getAllUsersService,
+   listUsersService,
    getUserByIdService,
    updateUserService,
 } from "./user.service";
 import { successResponse } from "@/pkg/response/success";
+import { updateUserSchema, listUserSchema } from "./user.validation";
 
-export const getAllUsersHandler = async (req: Request, res: Response) => {
-   const data = await getAllUsersService();
+export const listUsersHandler = async (req: Request, res: Response) => {
+   const query = await listUserSchema.validate(req.query);
+   const data = await listUsersService(query);
    successResponse(res, { data });
 };
 
@@ -20,7 +22,8 @@ export const getUserByIdHandler = async (req: Request, res: Response) => {
 
 export const updateUserHandler = async (req: Request, res: Response) => {
    const id = req.params.id as string;
-   const data = await updateUserService(id, req.body);
+   const body = await updateUserSchema.validate(req.body);
+   const data = await updateUserService(id, body);
    successResponse(res, { data, message: "User updated successfully" });
 };
 

@@ -2,7 +2,7 @@ import { Router } from "express";
 import {
    createCategoryHandler,
    deleteCategoryHandler,
-   getAllCategoriesHandler,
+   listCategoriesHandler,
    getCategoryByIdHandler,
    updateCategoryHandler,
 } from "./category.controller";
@@ -11,7 +11,7 @@ import authMiddleware, { authorize } from "@/internal/middleware/auth";
 const categoryRoutes = Router();
 
 // Public can view categories
-categoryRoutes.get("/", getAllCategoriesHandler);
+categoryRoutes.get("/", listCategoriesHandler);
 categoryRoutes.get("/:id", getCategoryByIdHandler);
 
 // Only admin can manage categories

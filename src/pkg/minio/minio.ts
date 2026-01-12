@@ -23,16 +23,15 @@ export const initMinio = async () => {
 };
 
 export const uploadFile = async (
-   file: Express.Multer.File
+   file: Express.Multer.File,
+   folder: string,
 ): Promise<string> => {
-   const fileName = `${Date.now()}-${file.originalname}`;
+   const fileName = `${folder}/${Date.now()}-${file.originalname}`;
    await minioClient.putObject(bucketName, fileName, file.buffer, file.size, {
       "Content-Type": file.mimetype,
    });
 
-   // Return the URL to access the file
-   const protocol = process.env.MINIO_USE_SSL === "true" ? "https" : "http";
-   return `${protocol}://${process.env.MINIO_ENDPOINT}:${process.env.MINIO_PORT}/${bucketName}/${fileName}`;
+   return `${fileName}`;
 };
 
 export const deleteFile = async (fileName: string) => {
@@ -40,3 +39,6 @@ export const deleteFile = async (fileName: string) => {
 };
 
 export default minioClient;
+export const presignGetUrl = async (objectName: string, expirySeconds: number = 3600) => {
+   return await minioClient.presignedGetObject(bucketName, objectName, expirySeconds);
+};

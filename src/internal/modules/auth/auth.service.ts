@@ -2,9 +2,10 @@ import { createToken, createUser, deleteToken, findByEmail, findToken } from "./
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import { NewBadRequestError, NewConflictError } from "@/pkg/apperror/appError";
-import { UserSchema } from "@/internal/models/user";
+import { RegisterRequest } from "./auth.validation";
+import { generateRefreshToken, generateUserToken } from "@/pkg/auth/token";
 
-export const registerService = async (data: Partial<UserSchema>) => {
+export const registerService = async (data: RegisterRequest) => {
    const existUser = await findByEmail(data.email!);
 
    if (existUser) {
@@ -30,28 +31,17 @@ export const loginService = async (email: string, password: string) => {
       throw NewBadRequestError("Bad Credential");
    }
 
-   // Generate JWT Token
-   const accessToken = jwt.sign({ email: user.email }, process.env.JWT_KEY!, {
-      expiresIn: "1h",
-   });
-
-   const refreshToken = jwt.sign({ email: user.email }, process.env.JWT_REFRESH_KEY!, {
-      expiresIn: "7d",
-   });
-
    // Store Refresh Token
-   await createToken(user.id, refreshToken);
+   const refToken = await createToken(user._id.toString(), generateRefreshToken());
 
-   const userObj = user.toObject();
-   delete userObj.password;
+   // Generate JWT Token
+   const token = generateUserToken(refToken)
+
+   delete user.password;
 
    return {
-      token: {
-         type: "Bearer",
-         accessToken,
-         refreshToken,
-      },
-      data: userObj,
+      token,
+      data: user,
    };
 };
 
@@ -80,10 +70,9 @@ export const refreshService = async (token: string) => {
 
       // Update Refresh Token (Optional: rotate token)
       await deleteToken(token);
-      await createToken(user.id, refreshToken);
+      await createToken(user._id.toString(), refreshToken);
 
-      const userObj = user.toObject();
-      delete userObj.password;
+      delete user.password;
 
       return {
          token: {
@@ -91,7 +80,7 @@ export const refreshService = async (token: string) => {
             accessToken,
             refreshToken,
          },
-         data: userObj,
+         data: user,
       };
    } catch (error) {
       throw NewBadRequestError("Invalid or expired refresh token");

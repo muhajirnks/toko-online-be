@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import User, { UserSchema } from "@/internal/models/user";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import { HydratedDocument } from "mongoose";
+import Token from "../models/token";
 
 declare global {
    namespace Express {
@@ -20,6 +21,7 @@ const authMiddleware = async (
 
    if (token) {
       try {
+         console.log('token', token)
          const user = await verifyToken(token);
          req.user = user;
          next();
@@ -34,9 +36,8 @@ const authMiddleware = async (
 export const verifyToken = async (token: string) => {
    try {
       const decoded = jwt.verify(token, process.env.JWT_KEY!);
-      const user = await User.findOne({
-         email: (decoded as JwtPayload).email,
-      }).select("-password");
+      const tokenDoc = await Token.findById((decoded as JwtPayload).sub)
+      const user = await User.findById(tokenDoc?.userId).select("-password");
       return user;
    } catch {
       throw new Error("Unauthorized");

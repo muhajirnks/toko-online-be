@@ -1,6 +1,6 @@
 import mongoose, { Schema, Document } from "mongoose";
 
-export interface CategorySchema extends Document {
+export interface CategorySchema {
    name: string;
    description?: string;
    createdAt: Date;

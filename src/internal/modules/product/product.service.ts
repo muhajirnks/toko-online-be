@@ -7,10 +7,23 @@ import {
 } from "./product.repo";
 import { NewForbiddenError, NewNotFoundError } from "@/pkg/apperror/appError";
 import { ProductSchema } from "@/internal/models/product";
-import { uploadFile } from "@/pkg/minio/minio";
+import { presignGetUrl, uploadFile } from "@/pkg/minio/minio";
+import { CreateProductRequest, ListProductRequest, UpdateProductRequest } from "./product.validation";
+import mongoose, { HydratedDocument } from "mongoose";
+import { UserSchema } from "@/internal/models/user";
 
-export const getAllProductsService = async () => {
-   return await findAllProducts();
+export const listProductsService = async (query: ListProductRequest) => {
+   const items = await findAllProducts(query);
+   const withSigned = await Promise.all(
+      items.map(async (p) => {
+         if (p.imageUrl) {
+            const signed = await presignGetUrl(p.imageUrl);
+            return { ...p, imageUrl: signed };
+         }
+         return p;
+      })
+   );
+   return withSigned;
 };
 
 export const getProductByIdService = async (id: string) => {
@@ -21,33 +34,50 @@ export const getProductByIdService = async (id: string) => {
    return product;
 };
 
-export const createProductService = async (data: Partial<ProductSchema>, file?: Express.Multer.File) => {
-   if (file) {
-      data.image = await uploadFile(file);
+export const createProductService = async (
+   data: CreateProductRequest,
+   user: HydratedDocument<UserSchema>
+) => {
+   const product: Partial<ProductSchema> = {
+      name: data.name,
+      category: new mongoose.Types.ObjectId(data.category),
+      description: data.description,
+      price: data.price,
+      sellerId: new mongoose.Types.ObjectId(user.id),
+      stock: data.stock,
    }
-   return await createProduct(data);
+   if (data.image) {
+      product.imageUrl = await uploadFile(data.image as any, "products");
+   }
+   return await createProduct(product);
 };
 
 export const updateProductService = async (
    id: string,
-   data: Partial<ProductSchema>,
-   sellerId: string,
-   file?: Express.Multer.File
+   data: UpdateProductRequest,
+   user: HydratedDocument<UserSchema>,
 ) => {
    const product = await findProductById(id);
    if (!product) {
       throw NewNotFoundError("Product not found");
    }
 
-   if (product.sellerId.toString() !== sellerId) {
+   if (product.sellerId.toString() !== user.id) {
       throw NewForbiddenError("You are not authorized to update this product");
    }
 
-   if (file) {
-      data.image = await uploadFile(file);
+   if (data.image) {
+      product.imageUrl = await uploadFile(data.image as any, "products");
    }
 
-   return await updateProduct(id, data);
+   product.name = data.name;
+   product.category = new mongoose.Types.ObjectId(data.category);
+   product.description = data.description;
+   product.price = data.price;
+   product.sellerId = new mongoose.Types.ObjectId(user.id);
+   product.stock = data.stock;
+
+   return await updateProduct(id, product);
 };
 
 export const deleteProductService = async (id: string, sellerId: string) => {

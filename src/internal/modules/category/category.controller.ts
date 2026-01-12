@@ -1,16 +1,17 @@
 import { Request, Response } from "express";
-import { createCategorySchema, updateCategorySchema } from "./category.validation";
+import { createCategorySchema, listCategorySchema, updateCategorySchema } from "./category.validation";
 import {
    createCategoryService,
    deleteCategoryService,
-   getAllCategoriesService,
+   listCategoriesService,
    getCategoryByIdService,
    updateCategoryService,
 } from "./category.service";
 import { createdResponse, successResponse } from "@/pkg/response/success";
 
-export const getAllCategoriesHandler = async (req: Request, res: Response) => {
-   const data = await getAllCategoriesService();
+export const listCategoriesHandler = async (req: Request, res: Response) => {
+   const query = await listCategorySchema.validate(req.query);
+   const data = await listCategoriesService(query);
    successResponse(res, { data });
 };
 

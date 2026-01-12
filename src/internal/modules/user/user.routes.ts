@@ -1,7 +1,7 @@
 import { Router } from "express";
 import {
    deleteUserHandler,
-   getAllUsersHandler,
+   listUsersHandler,
    getUserByIdHandler,
    updateUserHandler,
 } from "./user.controller";
@@ -13,7 +13,7 @@ const userRoutes = Router();
 // Only admin can manage users
 userRoutes.use(authMiddleware, authorize(["admin"]));
 
-userRoutes.get("/", asyncHandler(getAllUsersHandler));
+userRoutes.get("/", asyncHandler(listUsersHandler));
 userRoutes.get("/:id", asyncHandler(getUserByIdHandler));
 userRoutes.put("/:id", asyncHandler(updateUserHandler));
 userRoutes.delete("/:id", asyncHandler(deleteUserHandler));

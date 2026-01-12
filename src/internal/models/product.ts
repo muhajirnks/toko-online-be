@@ -1,11 +1,11 @@
 import mongoose, { Schema, Document } from "mongoose";
 
-export interface ProductSchema extends Document {
+export interface ProductSchema {
    name: string;
    description: string;
    price: number;
    stock: number;
-   image?: string;
+   imageUrl?: string;
    category?: mongoose.Types.ObjectId;
    sellerId: mongoose.Types.ObjectId;
    createdAt: Date;
@@ -18,7 +18,7 @@ const ProductSchema: Schema = new Schema(
       description: { type: String, required: true },
       price: { type: Number, required: true },
       stock: { type: Number, required: true, default: 0 },
-      image: { type: String },
+      imageUrl: { type: String },
       category: { type: Schema.Types.ObjectId, ref: "Category" },
       sellerId: { type: Schema.Types.ObjectId, ref: "User", required: true },
    },

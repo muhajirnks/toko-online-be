@@ -1,9 +1,9 @@
 import { deleteUser, findAllUsers, findUserById, updateUser } from "./user.repo";
 import { NewNotFoundError } from "@/pkg/apperror/appError";
-import { UserSchema } from "@/internal/models/user";
+import { ListUserRequest, UpdateUserRequest } from "./user.validation";
 
-export const getAllUsersService = async () => {
-   return await findAllUsers();
+export const listUsersService = async (query: ListUserRequest) => {
+   return await findAllUsers(query);
 };
 
 export const getUserByIdService = async (id: string) => {
@@ -14,7 +14,7 @@ export const getUserByIdService = async (id: string) => {
    return user;
 };
 
-export const updateUserService = async (id: string, data: Partial<UserSchema>) => {
+export const updateUserService = async (id: string, data: UpdateUserRequest) => {
    const user = await findUserById(id);
    if (!user) {
       throw NewNotFoundError("User not found");

@@ -7,9 +7,10 @@ import {
 } from "./category.repo";
 import { NewNotFoundError } from "@/pkg/apperror/appError";
 import { CategorySchema } from "@/internal/models/category";
+import { CreateCategoryRequest, ListCategoryRequest, UpdateCategoryRequest } from "./category.validation";
 
-export const getAllCategoriesService = async () => {
-   return await findAllCategories();
+export const listCategoriesService = async (query: ListCategoryRequest) => {
+   return await findAllCategories(query);
 };
 
 export const getCategoryByIdService = async (id: string) => {
@@ -20,11 +21,11 @@ export const getCategoryByIdService = async (id: string) => {
    return category;
 };
 
-export const createCategoryService = async (data: Partial<CategorySchema>) => {
+export const createCategoryService = async (data: CreateCategoryRequest) => {
    return await createCategory(data);
 };
 
-export const updateCategoryService = async (id: string, data: Partial<CategorySchema>) => {
+export const updateCategoryService = async (id: string, data: UpdateCategoryRequest) => {
    const category = await findCategoryById(id);
    if (!category) {
       throw NewNotFoundError("Category not found");

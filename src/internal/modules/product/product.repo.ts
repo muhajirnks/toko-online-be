@@ -1,19 +1,21 @@
 import Product, { ProductSchema } from "@/internal/models/product";
+import { ListProductRequest } from "./product.validation";
 
-export const findAllProducts = async (query: any = {}) => {
-   return await Product.find(query).populate("category").populate("sellerId").exec();
+export const findAllProducts = async (query: ListProductRequest) => {
+   return await Product.find().populate("category").populate("sellerId").lean().exec();
 };
 
 export const findProductById = async (id: string) => {
-   return await Product.findById(id).populate("category").populate("sellerId").exec();
+   return await Product.findById(id).populate("category").populate("sellerId").lean().exec();
 };
 
 export const createProduct = async (data: Partial<ProductSchema>) => {
-   return await Product.create(data);
+   const doc = await Product.create(data);
+   return doc.toObject();
 };
 
 export const updateProduct = async (id: string, data: Partial<ProductSchema>) => {
-   return await Product.findByIdAndUpdate(id, data, { new: true }).exec();
+   return await Product.findByIdAndUpdate(id, data, { new: true }).lean().exec();
 };
 
 export const deleteProduct = async (id: string) => {

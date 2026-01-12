@@ -1,31 +1,29 @@
 import { Request, Response } from "express";
-import { createOrderSchema, updateOrderStatusSchema } from "./order.validation";
+import { createOrderSchema, listOrderSchema, updateOrderStatusSchema } from "./order.validation";
 import {
    createOrderService,
    deleteOrderService,
-   getAllOrdersService,
+   listOrdersService,
    getOrderByIdService,
    updateOrderService,
 } from "./order.service";
 import { createdResponse, successResponse } from "@/pkg/response/success";
 
-export const getAllOrdersHandler = async (req: Request, res: Response) => {
-   const data = await getAllOrdersService(req.user);
+export const listOrdersHandler = async (req: Request, res: Response) => {
+   const query = await listOrderSchema.validate(req.query)
+   const data = await listOrdersService(req.user!, query);
    successResponse(res, { data });
 };
 
 export const getOrderByIdHandler = async (req: Request, res: Response) => {
    const id = req.params.id as string;
-   const data = await getOrderByIdService(id, req.user);
+   const data = await getOrderByIdService(id, req.user!);
    successResponse(res, { data });
 };
 
 export const createOrderHandler = async (req: Request, res: Response) => {
    const body = await createOrderSchema.validate(req.body);
-   const data = await createOrderService({
-      ...body,
-      userId: (req.user as any)?._id,
-   });
+   const data = await createOrderService(req.user!, body);
    createdResponse(res, { data, message: "Order created successfully" });
 };
 

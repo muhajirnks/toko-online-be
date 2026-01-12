@@ -2,15 +2,16 @@ import Token from "@/internal/models/token";
 import User from "@/internal/models/user";
 
 export const findByEmail = async (email: string) => {
-   return await User.findOne({ email }).exec();
+   return await User.findOne({ email }).lean().exec();
 };
 
 export const createUser = async (data: any) => {
-   return await User.create(data);
+   const result = await User.create(data);
+   return result.toObject();
 };
 
 export const findToken = async (token: string) => {
-   return await Token.findOne({ refreshToken: token }).exec();
+   return await Token.findOne({ refreshToken: token }).lean().exec();
 };
 
 export const deleteToken = async (token: string) => {
@@ -18,9 +19,11 @@ export const deleteToken = async (token: string) => {
 };
 
 export const createToken = async (userId: string, refreshToken: string) => {
-   return await Token.create({
+   const result = await Token.create({
       userId,
       refreshToken,
       lastUsed: new Date(),
    });
+
+   return result.toObject();
 };
