@@ -22,17 +22,20 @@ export const getProductByIdHandler = async (req: Request, res: Response) => {
 
 export const createProductHandler = async (req: Request, res: Response) => {
    const body = await createProductSchema.validate(req.body);
-   const data = await createProductService({
-      ...body,
-      sellerId: req.user!.id,
-   } as any);
+   const data = await createProductService(
+      {
+         ...body,
+         sellerId: req.user!.id,
+      } as any,
+      req.file
+   );
    createdResponse(res, { data, message: "Product created successfully" });
 };
 
 export const updateProductHandler = async (req: Request, res: Response) => {
    const id = req.params.id as string;
    const body = await updateProductSchema.validate(req.body);
-   const data = await updateProductService(id, body as any, (req.user as any)._id);
+   const data = await updateProductService(id, body as any, req.user!.id, req.file);
    successResponse(res, { data, message: "Product updated successfully" });
 };
 

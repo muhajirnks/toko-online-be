@@ -1,16 +1,16 @@
 services:
     be:
         build:
-            context: ..
+            context: .
             dockerfile: docker/Dockerfile
             target: be
         ports:
-            - "${APP_PORT}:${APP_PORT}"
+            - "${PORT}:${PORT}"
         env_file:
-            - ../${ENV_FILE:-.env}
+            - ./${ENV_FILE:-.env}
         environment:
-            DB_PRIMARY_HOST: db
-            MINIO_HOST: minio
+            DB_HOST: db
+            MINIO_ENDPOINT: minio
         volumes:
             - ./storage:/app/storage:rw
         depends_on:
@@ -18,21 +18,21 @@ services:
             - minio
 
     db:
-        image: postgres:17
+        image: mongo:latest
         environment:
-            POSTGRES_USER: ${DB_PRIMARY_USER}
-            POSTGRES_PASSWORD: ${DB_PRIMARY_PASS}
-            POSTGRES_DB: ${DB_PRIMARY_NAME}
+            MONGO_INITDB_ROOT_USERNAME: ${DB_USER}
+            MONGO_INITDB_ROOT_PASSWORD: ${DB_PASS}
+            MONGO_INITDB_DATABASE: ${DB_NAME}
         ports:
-            - "5432:5432"
+            - "27017:27017"
         volumes:
-            - ./storage/dbdata/${DB_PRIMARY_NAME}_${DB_PRIMARY_NAME}:/var/lib/postgresql/data
+            - ./storage/mongodb-data:/data/db
 
     minio:
         image: minio/minio
         environment:
-            MINIO_ROOT_USER: ${MINIO_USER}
-            MINIO_ROOT_PASSWORD: ${MINIO_PASS}
+            MINIO_ROOT_USER: ${MINIO_ACCESS_KEY}
+            MINIO_ROOT_PASSWORD: ${MINIO_SECRET_KEY}
         command: server /data --console-address ":9001"
         ports:
             - "9000:9000"

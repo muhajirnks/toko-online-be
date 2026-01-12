@@ -1,16 +1,19 @@
 import express from "express";
 import cookieParser from "cookie-parser";
 import morgan from "morgan";
-import mongoose from "mongoose";
 import compression from "compression";
-import cors from 'cors';
+import cors from "cors";
 import { config } from "dotenv";
 config({ path: ".env" });
 
 import path from "path";
-import "@/internal/config/cloudinary";
 import initV1Route from "@/internal/routes/v1";
 import globalErrorHandler from "@/internal/middleware/globalError";
+import { initMinio } from "@/pkg/minio/minio";
+import { connectDB } from "@/internal/config/database";
+
+const connection = connectDB();
+initMinio();
 
 const app = express();
 const port = process.env.PORT || 3001;
@@ -18,13 +21,14 @@ const port = process.env.PORT || 3001;
 app.use(globalErrorHandler());
 
 // cors
-app.use(cors())
+app.use(cors());
 
 // gzip
 app.use(compression());
 
 // Parser
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
 // Log
@@ -35,16 +39,8 @@ app.use("/api/v1", initV1Route());
 
 // FrontEnd / Static
 app.use(express.static(path.join(__dirname, "./public")));
-app.get("*", (req, res) => {
-   res.sendFile(path.join(__dirname, "./public/index.html"));
-});
 
-
-// MongoDB Connect
-mongoose.connect(process.env.MONGO_URI!);
-
-mongoose.connection.on("open", () => {
-   console.log("Database Connected");
+connection.on("open", () => {
    app.listen(port, () => {
       console.log(`Server running on [http://localhost:${port}]...`);
    });

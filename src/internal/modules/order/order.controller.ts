@@ -31,7 +31,8 @@ export const createOrderHandler = async (req: Request, res: Response) => {
 
 export const updateOrderHandler = async (req: Request, res: Response) => {
    const id = req.params.id as string;
-   const data = await updateOrderService(id, req.body);
+   const body = await updateOrderStatusSchema.validate(req.body);
+   const data = await updateOrderService(id, body);
    successResponse(res, { data, message: "Order updated successfully" });
 };
 

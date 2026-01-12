@@ -7,6 +7,7 @@ import {
 } from "./product.repo";
 import { NewForbiddenError, NewNotFoundError } from "@/pkg/apperror/appError";
 import { ProductSchema } from "@/internal/models/product";
+import { uploadFile } from "@/pkg/minio/minio";
 
 export const getAllProductsService = async () => {
    return await findAllProducts();
@@ -20,11 +21,19 @@ export const getProductByIdService = async (id: string) => {
    return product;
 };
 
-export const createProductService = async (data: Partial<ProductSchema>) => {
+export const createProductService = async (data: Partial<ProductSchema>, file?: Express.Multer.File) => {
+   if (file) {
+      data.image = await uploadFile(file);
+   }
    return await createProduct(data);
 };
 
-export const updateProductService = async (id: string, data: Partial<ProductSchema>, sellerId: string) => {
+export const updateProductService = async (
+   id: string,
+   data: Partial<ProductSchema>,
+   sellerId: string,
+   file?: Express.Multer.File
+) => {
    const product = await findProductById(id);
    if (!product) {
       throw NewNotFoundError("Product not found");
@@ -32,6 +41,10 @@ export const updateProductService = async (id: string, data: Partial<ProductSche
 
    if (product.sellerId.toString() !== sellerId) {
       throw NewForbiddenError("You are not authorized to update this product");
+   }
+
+   if (file) {
+      data.image = await uploadFile(file);
    }
 
    return await updateProduct(id, data);
