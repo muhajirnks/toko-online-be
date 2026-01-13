@@ -14,16 +14,15 @@ import { UserSchema } from "@/internal/models/user";
 
 export const listProductsService = async (query: ListProductRequest) => {
    const items = await findAllProducts(query);
-   const withSigned = await Promise.all(
+   const withBaseUrl = await Promise.all(
       items.map(async (p) => {
          if (p.imageUrl) {
-            const signed = await presignGetUrl(p.imageUrl);
-            return { ...p, imageUrl: signed };
+            return { ...p, imageUrl: process.env.MINIO_BASE_URL + "/" + p.imageUrl };
          }
          return p;
       })
    );
-   return withSigned;
+   return withBaseUrl;
 };
 
 export const getProductByIdService = async (id: string) => {
@@ -48,9 +47,13 @@ export const createProductService = async (
       seller: new mongoose.Types.ObjectId(user.id),
       stock: data.stock,
    }
-   product.imageUrl = await uploadFile(data.image as any, "products");
-   product.imageUrl = await presignGetUrl(product.imageUrl)
-   return await createProduct(product);
+   const { publicPath } = await uploadFile(data.image, "products");
+   product.imageUrl = publicPath;
+
+   const result = await createProduct(product);
+   result.imageUrl = process.env.MINIO_BASE_URL + "/" + product.imageUrl
+
+   return result
 };
 
 export const updateProductService = async (
@@ -68,7 +71,8 @@ export const updateProductService = async (
    }
 
    if (data.image) {
-      product.imageUrl = await uploadFile(data.image as any, "products");
+      const { publicPath } = await uploadFile(data.image, "products");
+      product.imageUrl = publicPath;
    }
 
    product.name = data.name;

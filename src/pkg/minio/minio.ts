@@ -21,18 +21,41 @@ export const initMinio = async () => {
       await minioClient.makeBucket(bucketName);
       console.log(`Bucket ${bucketName} created successfully.`);
    }
+
+   console.log(`Bucket ${bucketName} policy set to public read.`);
+   setPublic()
 };
+
+const setPublic = async () => {
+   // Set bucket policy to public read
+   const policy = {
+      Version: "2012-10-17",
+      Statement: [
+         {
+            Effect: "Allow",
+            Principal: { AWS: ["*"] },
+            Action: ["s3:GetObject"],
+            Resource: [`arn:aws:s3:::${bucketName}/*`],
+         },
+      ],
+   };
+
+   await minioClient.setBucketPolicy(bucketName, JSON.stringify(policy));
+}
 
 export const uploadFile = async (
    file: Express.Multer.File,
    folder: string,
-): Promise<string> => {
+) => {
    const fileName = `${folder}/${Date.now()}-${file.originalname}`;
    await minioClient.putObject(bucketName, fileName, file.buffer, file.size, {
       "Content-Type": file.mimetype,
    });
 
-   return `${fileName}`;
+   return {
+      publicPath: `${bucketName}/${fileName}`,
+      systemPath: `${fileName}`
+   };
 };
 
 export const deleteFile = async (fileName: string) => {

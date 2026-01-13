@@ -17,7 +17,7 @@ export const createProductSchema = yup.object({
    description: yup.string().required(),
    price: yup.number().required().min(0),
    stock: yup.number().required().min(0),
-   image: yup.mixed().required(),
+   image: yup.mixed<Express.Multer.File>().required(),
    categoryId: yup.string().required(),
 });
 
@@ -26,7 +26,7 @@ export const updateProductSchema = yup.object({
    description: yup.string().required(),
    price: yup.number().required().min(0),
    stock: yup.number().required().min(0),
-   image: yup.mixed().optional(),
+   image: yup.mixed<Express.Multer.File>().optional(),
    categoryId: yup.string().required(),
 });
 
