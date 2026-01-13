@@ -5,13 +5,13 @@ import {
    getUserByIdService,
    updateUserService,
 } from "./user.service";
-import { successResponse } from "@/pkg/response/success";
+import { paginationResponse, successResponse } from "@/pkg/response/success";
 import { updateUserSchema, listUserSchema } from "./user.validation";
 
 export const listUsersHandler = async (req: Request, res: Response) => {
    const query = await listUserSchema.validate(req.query);
    const data = await listUsersService(query);
-   successResponse(res, { data });
+   paginationResponse(res, data);
 };
 
 export const getUserByIdHandler = async (req: Request, res: Response) => {

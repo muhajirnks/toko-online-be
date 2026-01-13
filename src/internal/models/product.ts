@@ -1,25 +1,31 @@
-import mongoose, { Schema } from "mongoose";
+import { PaginateModel } from "@/pkg/pagination/mongoosePlugin";
+import { model, Schema, Types } from "mongoose";
 
 export interface ProductSchema {
+   _id: Types.ObjectId;
    name: string;
    description: string;
    price: number;
    stock: number;
    imageUrl: string;
-   category?: mongoose.Types.ObjectId;
-   seller: mongoose.Types.ObjectId;
+   category?: Types.ObjectId;
+   seller: Types.ObjectId;
    createdAt: Date;
    updatedAt: Date;
 }
 
-const ProductSchema: Schema = new Schema(
+const productSchema = new Schema<ProductSchema>(
    {
       name: { type: String, required: true },
       description: { type: String, required: true },
       price: { type: Number, required: true },
       stock: { type: Number, required: true, default: 0 },
       imageUrl: { type: String, required: true },
-      category: { type: Schema.Types.ObjectId, ref: "Category" },
+      category: {
+         type: Schema.Types.ObjectId,
+         ref: "Category",
+         required: true,
+      },
       seller: { type: Schema.Types.ObjectId, ref: "User", required: true },
    },
    {
@@ -28,4 +34,9 @@ const ProductSchema: Schema = new Schema(
    }
 );
 
-export default mongoose.model<ProductSchema>("Product", ProductSchema);
+const Product = model<ProductSchema, PaginateModel<ProductSchema>>(
+   "Product",
+   productSchema
+);
+
+export default Product;

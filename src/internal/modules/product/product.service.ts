@@ -8,21 +8,23 @@ import {
 import { NewForbiddenError, NewNotFoundError } from "@/pkg/apperror/appError";
 import { ProductSchema } from "@/internal/models/product";
 import { presignGetUrl, uploadFile } from "@/pkg/minio/minio";
-import { CreateProductRequest, ListProductRequest, UpdateProductRequest } from "./product.validation";
+import {
+   CreateProductRequest,
+   ListProductRequest,
+   UpdateProductRequest,
+} from "./product.validation";
 import mongoose, { HydratedDocument } from "mongoose";
 import { UserSchema } from "@/internal/models/user";
 
 export const listProductsService = async (query: ListProductRequest) => {
    const items = await findAllProducts(query);
-   const withBaseUrl = await Promise.all(
-      items.map(async (p) => {
-         if (p.imageUrl) {
-            return { ...p, imageUrl: process.env.MINIO_BASE_URL + "/" + p.imageUrl };
-         }
-         return p;
-      })
-   );
-   return withBaseUrl;
+   items.data = items.data.map((p) => {
+      if (p.imageUrl) {
+         p.imageUrl = process.env.MINIO_BASE_URL + "/" + p.imageUrl
+      }
+      return p;
+   });
+   return items;
 };
 
 export const getProductByIdService = async (id: string) => {
@@ -31,7 +33,7 @@ export const getProductByIdService = async (id: string) => {
       throw NewNotFoundError("Product not found");
    }
 
-   product.imageUrl = await presignGetUrl(product.imageUrl)
+   product.imageUrl = process.env.MINIO_BASE_URL + "/" + product.imageUrl
    return product;
 };
 
@@ -46,20 +48,20 @@ export const createProductService = async (
       price: data.price,
       seller: new mongoose.Types.ObjectId(user.id),
       stock: data.stock,
-   }
+   };
    const { publicPath } = await uploadFile(data.image, "products");
    product.imageUrl = publicPath;
 
    const result = await createProduct(product);
-   result.imageUrl = process.env.MINIO_BASE_URL + "/" + product.imageUrl
+   result.imageUrl = process.env.MINIO_BASE_URL + "/" + product.imageUrl;
 
-   return result
+   return result;
 };
 
 export const updateProductService = async (
    id: string,
    data: UpdateProductRequest,
-   user: HydratedDocument<UserSchema>,
+   user: HydratedDocument<UserSchema>
 ) => {
    const product = await findProductById(id);
    if (!product) {

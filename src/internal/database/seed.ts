@@ -1,29 +1,33 @@
 import { config } from "dotenv";
+config();
+
+import { connectDB } from "@/internal/config/database";
 import User from "@/internal/models/user";
 import Category from "@/internal/models/category";
 import Product from "@/internal/models/product";
-import { connectDB } from "@/internal/config/database";
 import { initMinio, uploadFile } from "@/pkg/minio/minio";
 import fs from "fs";
 import path from "path";
 
-config();
-
 const seed = async () => {
    try {
-      const connection = connectDB();
+      await connectDB();
+      const { connection } = await import("mongoose");
 
-      await new Promise((resolve) => connection.on("open", resolve));
+      await Promise.all([new Promise((resolve) => connection.on("open", resolve)), initMinio()]);
+
       console.log("Connected to database for seeding...");
-      await initMinio();
       const publicImagePath = path.resolve("./public/product.jpg");
       const imageBuffer = fs.readFileSync(publicImagePath);
-      const imageUrl = await uploadFile({
-         originalname: "product.jpg",
-         buffer: imageBuffer,
-         size: imageBuffer.length,
-         mimetype: "image/jpeg",
-      } as any, "products");
+      const imageUrl = await uploadFile(
+         {
+            originalname: "product.jpg",
+            buffer: imageBuffer,
+            size: imageBuffer.length,
+            mimetype: "image/jpeg",
+         } as any,
+         "products"
+      );
 
       // Clear existing data
       await User.deleteMany({});

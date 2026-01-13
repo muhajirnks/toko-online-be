@@ -2,7 +2,13 @@ import Product, { ProductSchema } from "@/internal/models/product";
 import { ListProductRequest } from "./product.validation";
 
 export const findAllProducts = async (query: ListProductRequest) => {
-   return await Product.find().populate("category").populate("seller").lean().exec();
+   return await Product.paginate({}, {
+      page: query.page,
+      limit: query.limit,
+      sort: [[query.sort, query.direction], ["_id", "desc"]],
+      lean: true,
+      populate: ["category", "seller"],
+   });
 };
 
 export const findProductById = async (id: string) => {

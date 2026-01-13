@@ -23,16 +23,25 @@ export const updateOrderStatusSchema = yup.object({
 });
 
 export const listOrderSchema = yup.object({
-   page: yup.number().optional().min(1),
-   limit: yup.number().optional().min(1).max(100),
-   sort: yup.string().optional(),
-   direction: yup.string().oneOf(["asc", "desc"]).optional(),
+   page: yup.number().optional().min(1).default(1),
+   limit: yup.number().optional().min(1).max(100).default(10),
+   sort: yup
+      .string()
+      .optional()
+      .oneOf(["_id", "customerName", "customerEmail", "createdAt", "updatedAt"])
+      .default("_id"),
+   direction: yup.string().oneOf(["asc", "desc"]).optional().default("desc"),
    search: yup.string().optional(),
-   status: yup.string().oneOf(["pending", "paid", "shipped", "completed", "cancelled"]).optional(),
+   status: yup
+      .string()
+      .oneOf(["pending", "paid", "shipped", "completed", "cancelled"])
+      .optional(),
    userId: yup.string().optional(),
    sellerId: yup.string().optional(),
-})
+});
 
-export type ListOrderRequest = yup.InferType<typeof listOrderSchema>
-export type CreateOrderRequest = yup.InferType<typeof createOrderSchema>
-export type UpdateOrderStatusRequest = yup.InferType<typeof updateOrderStatusSchema>
+export type ListOrderRequest = yup.InferType<typeof listOrderSchema>;
+export type CreateOrderRequest = yup.InferType<typeof createOrderSchema>;
+export type UpdateOrderStatusRequest = yup.InferType<
+   typeof updateOrderStatusSchema
+>;

@@ -1,7 +1,7 @@
 import { TokenSchema } from "@/internal/models/token";
 import crypto from "crypto";
 import jwt from "jsonwebtoken";
-import { HydratedDocument, Types } from "mongoose";
+import { Types } from "mongoose";
 import { Token } from "../response/success";
 
 export const generateRefreshToken = () => {

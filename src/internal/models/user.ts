@@ -1,7 +1,9 @@
-import { Schema, model } from "mongoose";
+import { Schema, Types, model } from "mongoose";
 import bcrypt from "bcrypt";
+import { PaginateModel } from "@/pkg/pagination/mongoosePlugin";
 
 export interface UserSchema {
+   _id: Types.ObjectId;
    name: string;
    email: string;
    password?: string;
@@ -46,6 +48,6 @@ userSchema.pre("save", async function () {
    }
 });
 
-const User = model("User", userSchema);
+const User = model<UserSchema, PaginateModel<UserSchema>>("User", userSchema);
 
 export default User;

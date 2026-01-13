@@ -1,6 +1,7 @@
-import { Schema, model } from "mongoose";
+import { Schema, Types, model } from "mongoose";
 
 export interface TokenSchema {
+   _id: Types.ObjectId;
    userId: Schema.Types.ObjectId | string;
    refreshToken: string;
    lastUsed: NativeDate;

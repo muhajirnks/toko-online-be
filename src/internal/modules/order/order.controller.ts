@@ -7,12 +7,12 @@ import {
    getOrderByIdService,
    updateOrderService,
 } from "./order.service";
-import { createdResponse, successResponse } from "@/pkg/response/success";
+import { createdResponse, paginationResponse, successResponse } from "@/pkg/response/success";
 
 export const listOrdersHandler = async (req: Request, res: Response) => {
    const query = await listOrderSchema.validate(req.query)
    const data = await listOrdersService(req.user!, query);
-   successResponse(res, { data });
+   paginationResponse(res, data);
 };
 
 export const getOrderByIdHandler = async (req: Request, res: Response) => {

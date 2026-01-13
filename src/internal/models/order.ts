@@ -1,7 +1,9 @@
-import mongoose, { Schema } from "mongoose";
+import mongoose, { Schema, Types } from "mongoose";
 import { ProductSchema } from "./product";
+import { PaginateModel } from "@/pkg/pagination/mongoosePlugin";
 
 export interface OrderItemSchema {
+   _id: Types.ObjectId;
    product: mongoose.Types.ObjectId | ProductSchema;
    name: string;
    quantity: number;
@@ -9,6 +11,7 @@ export interface OrderItemSchema {
 }
 
 export interface OrderSchema {
+   _id: Types.ObjectId;
    userId?: mongoose.Types.ObjectId;
    customerName: string;
    customerEmail: string;
@@ -19,7 +22,7 @@ export interface OrderSchema {
    updatedAt: Date;
 }
 
-const OrderSchema: Schema = new Schema(
+const orderSchema = new Schema<OrderSchema>(
    {
       userId: { type: Schema.Types.ObjectId, ref: "User" },
       customerName: { type: String, required: true },
@@ -45,4 +48,4 @@ const OrderSchema: Schema = new Schema(
    }
 );
 
-export default mongoose.model<OrderSchema>("Order", OrderSchema);
+export default mongoose.model<OrderSchema, PaginateModel<OrderSchema>>("Order", orderSchema);

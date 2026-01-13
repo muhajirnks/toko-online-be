@@ -110,7 +110,7 @@ export const createOrderService = async (
       userId: new mongoose.Types.ObjectId(user.id),
       customerName,
       customerEmail,
-      items: orderItems.map((item) => ({ ...item, product: item.productId })),
+      items: orderItems.map((item) => ({ ...item, product: item.productId })) as any,
       totalAmount,
       status: "pending",
    };

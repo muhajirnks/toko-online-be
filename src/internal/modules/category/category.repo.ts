@@ -2,7 +2,12 @@ import Category, { CategorySchema } from "@/internal/models/category";
 import { ListCategoryRequest } from "./category.validation";
 
 export const findAllCategories = async (query: ListCategoryRequest) => {
-   return await Category.find().lean().exec();
+   return await Category.paginate({}, {
+      page: query.page,
+      limit: query.limit,
+      sort: [[query.sort, query.direction], ["_id", "desc"]],
+      lean: true,
+   })
 };
 
 export const findCategoryById = async (id: string) => {

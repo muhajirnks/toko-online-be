@@ -1,5 +1,9 @@
 import { Request, Response } from "express";
-import { createCategorySchema, listCategorySchema, updateCategorySchema } from "./category.validation";
+import {
+   createCategorySchema,
+   listCategorySchema,
+   updateCategorySchema,
+} from "./category.validation";
 import {
    createCategoryService,
    deleteCategoryService,
@@ -7,12 +11,16 @@ import {
    getCategoryByIdService,
    updateCategoryService,
 } from "./category.service";
-import { createdResponse, successResponse } from "@/pkg/response/success";
+import {
+   createdResponse,
+   paginationResponse,
+   successResponse,
+} from "@/pkg/response/success";
 
 export const listCategoriesHandler = async (req: Request, res: Response) => {
    const query = await listCategorySchema.validate(req.query);
    const data = await listCategoriesService(query);
-   successResponse(res, { data });
+   paginationResponse(res, data);
 };
 
 export const getCategoryByIdHandler = async (req: Request, res: Response) => {

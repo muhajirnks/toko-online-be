@@ -2,18 +2,36 @@ import Order, { OrderSchema } from "@/internal/models/order";
 import { ListOrderRequest } from "./order.validation";
 
 export const findAllOrders = async (query: ListOrderRequest) => {
-   return await Order.find().populate("items.product").lean().exec();
+   return await Order.paginate({}, {
+      page: query.page,
+      limit: query.limit,
+      sort: [[query.sort, query.direction], ["_id", "desc"]],
+      lean: true,
+      populate: ["items.product"],
+   })
 };
 
 export const findOrdersBySeller = async (sellerId: string, query: ListOrderRequest) => {
-   return await Order.find().populate({
-      path: "items.product",
-      match: { sellerId: sellerId }
-   }).lean().exec().then(orders => orders.filter(order => order.items.some(item => item.product !== null)));
+   return await Order.paginate({}, {
+      page: query.page,
+      limit: query.limit,
+      sort: [[query.sort, query.direction], ["_id", "desc"]],
+      lean: true,
+      populate: {
+         path: "items.product",
+         match: { seller: sellerId },
+      }
+   })
 };
 
 export const findOrdersByUser = async (userId: string, query: ListOrderRequest) => {
-   return await Order.find({ userId }).lean().exec();
+   return await Order.paginate({ userId }, {
+      page: query.page,
+      limit: query.limit,
+      sort: [[query.sort, query.direction], ["_id", "desc"]],
+      lean: true,
+      populate: ["items.product"],
+   });
 };
 
 export const findOrderById = async (id: string) => {
