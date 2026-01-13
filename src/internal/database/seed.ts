@@ -79,8 +79,8 @@ const seed = async () => {
                price: 14000000,
                stock: 50,
                category: electronics._id,
-               sellerId: seller._id,
-               imageUrl: imageUrl,
+               seller: seller._id,
+               imageUrl: imageUrl.publicPath,
             },
             {
                name: "Laptop Pro",
@@ -88,8 +88,8 @@ const seed = async () => {
                price: 15000000,
                stock: 20,
                category: electronics._id,
-               sellerId: seller._id,
-               imageUrl: imageUrl,
+               seller: seller._id,
+               imageUrl: imageUrl.publicPath,
             },
             {
                name: "Coffee Maker",
@@ -97,8 +97,8 @@ const seed = async () => {
                price: 4000000,
                stock: 100,
                category: home._id,
-               sellerId: seller._id,
-               imageUrl: imageUrl,
+               seller: seller._id,
+               imageUrl: imageUrl.publicPath,
             },
          ]);
          console.log(`Seeded ${products.length} products.`);
