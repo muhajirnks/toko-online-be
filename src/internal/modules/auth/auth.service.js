@@ -14,10 +14,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.logoutService = exports.refreshService = exports.loginService = exports.registerService = void 0;
 const auth_repo_1 = require("./auth.repo");
-const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const appError_1 = require("../../../pkg/apperror/appError");
 const token_1 = require("../../../pkg/auth/token");
+const store_repo_1 = require("../store/store.repo");
+const user_repo_1 = require("../user/user.repo");
 const registerService = (data) => __awaiter(void 0, void 0, void 0, function* () {
     const existUser = yield (0, auth_repo_1.findByEmail)(data.email);
     if (existUser) {
@@ -41,10 +42,11 @@ const loginService = (email, password) => __awaiter(void 0, void 0, void 0, func
     const refToken = yield (0, auth_repo_1.createToken)(user._id.toString(), (0, token_1.generateRefreshToken)());
     // Generate JWT Token
     const token = (0, token_1.generateUserToken)(refToken);
+    const store = yield (0, store_repo_1.findStoreByUserId)(user._id.toString());
     delete user.password;
     return {
         token,
-        data: user,
+        data: Object.assign(Object.assign({}, user), { store: store || null }),
     };
 });
 exports.loginService = loginService;
@@ -53,34 +55,17 @@ const refreshService = (token) => __awaiter(void 0, void 0, void 0, function* ()
     if (!storedToken) {
         throw (0, appError_1.NewBadRequestError)("Invalid refresh token");
     }
-    try {
-        const decoded = jsonwebtoken_1.default.verify(token, process.env.JWT_REFRESH_KEY);
-        const user = yield (0, auth_repo_1.findByEmail)(decoded.email);
-        if (!user) {
-            throw (0, appError_1.NewBadRequestError)("User not found");
-        }
-        const accessToken = jsonwebtoken_1.default.sign({ email: user.email }, process.env.JWT_KEY, {
-            expiresIn: "1h",
-        });
-        const refreshToken = jsonwebtoken_1.default.sign({ email: user.email }, process.env.JWT_REFRESH_KEY, {
-            expiresIn: "7d",
-        });
-        // Update Refresh Token (Optional: rotate token)
-        yield (0, auth_repo_1.deleteToken)(token);
-        yield (0, auth_repo_1.createToken)(user._id.toString(), refreshToken);
-        delete user.password;
-        return {
-            token: {
-                type: "Bearer",
-                accessToken,
-                refreshToken,
-            },
-            data: user,
-        };
+    const user = yield (0, user_repo_1.findUserById)(storedToken.userId.toString());
+    if (!user) {
+        throw (0, appError_1.NewBadRequestError)("User not found");
     }
-    catch (error) {
-        throw (0, appError_1.NewBadRequestError)("Invalid or expired refresh token");
-    }
+    const refToken = yield (0, auth_repo_1.createToken)(user._id.toString(), (0, token_1.generateRefreshToken)());
+    // Generate JWT Token
+    const userToken = (0, token_1.generateUserToken)(refToken);
+    yield (0, auth_repo_1.deleteToken)(token);
+    return {
+        token: userToken,
+    };
 });
 exports.refreshService = refreshService;
 const logoutService = (token) => __awaiter(void 0, void 0, void 0, function* () {

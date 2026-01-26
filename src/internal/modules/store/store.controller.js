@@ -19,13 +19,13 @@ const getMyStore = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
 });
 exports.getMyStore = getMyStore;
 const createMyStore = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const body = yield store_validation_1.createStoreSchema.validate(req.body);
+    const body = yield store_validation_1.createStoreSchema.validate(Object.assign(Object.assign({}, req.body), { avatar: req.file }));
     const result = yield (0, store_service_1.createMyStoreService)(req.user.id, body);
     (0, success_1.createdResponse)(res, { data: result, message: "Store created successfully" });
 });
 exports.createMyStore = createMyStore;
 const updateMyStore = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const body = yield store_validation_1.updateStoreSchema.validate(req.body);
+    const body = yield store_validation_1.updateStoreSchema.validate(Object.assign(Object.assign({}, req.body), { avatar: req.file }));
     const result = yield (0, store_service_1.updateMyStoreService)(req.user.id, body);
     (0, success_1.successResponse)(res, { data: result, message: "Store updated successfully" });
 });

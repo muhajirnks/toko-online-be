@@ -37,7 +37,11 @@ exports.updateStoreSchema = exports.createStoreSchema = void 0;
 const yup = __importStar(require("yup"));
 exports.createStoreSchema = yup.object({
     name: yup.string().required("Store name is required"),
+    description: yup.string().nullable().optional(),
+    avatar: yup.mixed().nullable().optional(),
 });
 exports.updateStoreSchema = yup.object({
     name: yup.string().required("Store name is required"),
+    description: yup.string().nullable().optional(),
+    avatar: yup.mixed().nullable().optional(),
 });

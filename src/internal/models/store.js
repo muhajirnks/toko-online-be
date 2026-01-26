@@ -6,6 +6,14 @@ const storeSchema = new mongoose_1.Schema({
         type: String,
         required: true,
     },
+    description: {
+        type: String,
+        required: false,
+    },
+    avatarUrl: {
+        type: String,
+        required: false,
+    },
     user: {
         type: mongoose_1.Schema.Types.ObjectId,
         ref: "User",

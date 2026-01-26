@@ -16,6 +16,7 @@ exports.updateMyStoreService = exports.createMyStoreService = exports.getMyStore
 const store_repo_1 = require("./store.repo");
 const appError_1 = require("../../../pkg/apperror/appError");
 const mongoose_1 = __importDefault(require("mongoose"));
+const cloudinary_1 = require("../../../pkg/cloudinary/cloudinary");
 const getMyStoreService = (userId) => __awaiter(void 0, void 0, void 0, function* () {
     const store = yield (0, store_repo_1.findStoreByUserId)(userId);
     if (!store) {
@@ -29,8 +30,15 @@ const createMyStoreService = (userId, data) => __awaiter(void 0, void 0, void 0,
     if (existingStore) {
         throw (0, appError_1.NewBadRequestError)("User already has a store");
     }
+    let avatarUrl = null;
+    if (data.avatar) {
+        const upload = yield (0, cloudinary_1.uploadFile)(data.avatar, "stores");
+        avatarUrl = upload.publicPath;
+    }
     const store = {
         name: data.name,
+        description: data.description || null,
+        avatarUrl: avatarUrl,
         user: new mongoose_1.default.Types.ObjectId(userId),
     };
     return yield (0, store_repo_1.createStore)(store);
@@ -41,6 +49,14 @@ const updateMyStoreService = (userId, data) => __awaiter(void 0, void 0, void 0,
     if (!store) {
         throw (0, appError_1.NewNotFoundError)("Store not found");
     }
-    return yield (0, store_repo_1.updateStore)(store._id.toString(), { name: data.name });
+    const updatedData = {
+        name: data.name,
+        description: data.description || null,
+    };
+    if (data.avatar) {
+        const upload = yield (0, cloudinary_1.uploadFile)(data.avatar, "stores");
+        updatedData.avatarUrl = upload.publicPath;
+    }
+    return yield (0, store_repo_1.updateStore)(store._id.toString(), updatedData);
 });
 exports.updateMyStoreService = updateMyStoreService;

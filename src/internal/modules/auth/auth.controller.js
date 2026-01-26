@@ -13,6 +13,7 @@ exports.logoutHandler = exports.getProfileHandler = exports.refreshHandler = exp
 const success_1 = require("../../../pkg/response/success");
 const auth_service_1 = require("./auth.service");
 const auth_validation_1 = require("./auth.validation");
+const store_repo_1 = require("../store/store.repo");
 const registerHandler = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const body = yield auth_validation_1.registerSchema.validate(req.body);
     const user = yield (0, auth_service_1.registerService)(body);
@@ -34,37 +35,39 @@ const loginHandler = (req, res) => __awaiter(void 0, void 0, void 0, function* (
 });
 exports.loginHandler = loginHandler;
 const refreshHandler = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { refresh_token } = yield auth_validation_1.refreshSchema.validate({ refresh_token: req.cookies.refresh_token });
-    const { token, data } = yield (0, auth_service_1.refreshService)(refresh_token);
+    const { refresh_token } = yield auth_validation_1.refreshSchema.validate({
+        refresh_token: req.cookies.refresh_token,
+    });
+    const { token } = yield (0, auth_service_1.refreshService)(refresh_token);
     (0, success_1.tokenResponse)(res, {
-        data,
         token,
         message: "Refresh token success",
     });
 });
 exports.refreshHandler = refreshHandler;
 const getProfileHandler = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a;
+    const user = req.user.toObject();
+    const store = yield (0, store_repo_1.findStoreByUserId)(user._id.toString());
     (0, success_1.successResponse)(res, {
-        data: (_a = req.user) === null || _a === void 0 ? void 0 : _a.toObject(),
+        data: Object.assign(Object.assign({}, user), { store: store || null }),
     });
 });
 exports.getProfileHandler = getProfileHandler;
 const logoutHandler = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { refresh_token } = yield auth_validation_1.logoutSchema.validate({ refresh_token: req.cookies.refresh_token });
+    const { refresh_token } = yield auth_validation_1.logoutSchema.validate({
+        refresh_token: req.cookies.refresh_token,
+    });
     yield (0, auth_service_1.logoutService)(refresh_token);
     // Clear Cookie
     res.clearCookie("access_token", {
         httpOnly: true,
         secure: true,
         sameSite: "none",
-        path: "/",
     });
     res.clearCookie("refresh_token", {
         httpOnly: true,
         secure: true,
         sameSite: "none",
-        path: "/",
     });
     (0, success_1.successResponse)(res, {
         message: "Logout success",

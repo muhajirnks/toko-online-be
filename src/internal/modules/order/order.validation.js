@@ -36,8 +36,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.listOrderSchema = exports.updateOrderStatusSchema = exports.createOrderSchema = void 0;
 const yup = __importStar(require("yup"));
 exports.createOrderSchema = yup.object({
-    customerName: yup.string().required(),
-    customerEmail: yup.string().email().required(),
     items: yup
         .array()
         .of(yup.object({

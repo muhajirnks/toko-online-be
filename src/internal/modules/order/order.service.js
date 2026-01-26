@@ -59,7 +59,7 @@ const getOrderByIdService = (id, user) => __awaiter(void 0, void 0, void 0, func
 });
 exports.getOrderByIdService = getOrderByIdService;
 const createOrderService = (user, data) => __awaiter(void 0, void 0, void 0, function* () {
-    const { items, customerName, customerEmail } = data;
+    const { items } = data;
     let totalAmount = 0;
     const orderItems = [];
     for (const item of items) {
@@ -85,8 +85,8 @@ const createOrderService = (user, data) => __awaiter(void 0, void 0, void 0, fun
     }
     const orderData = {
         userId: new mongoose_1.default.Types.ObjectId(user.id),
-        customerName,
-        customerEmail,
+        customerName: user.name,
+        customerEmail: user.email,
         items: orderItems.map((item) => (Object.assign(Object.assign({}, item), { product: item.productId }))),
         totalAmount,
         status: "pending",

@@ -15,7 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.updateStore = exports.createStore = exports.findStoreById = exports.findStoreByUserId = void 0;
 const store_1 = __importDefault(require("../../../internal/models/store"));
 const findStoreByUserId = (userId) => __awaiter(void 0, void 0, void 0, function* () {
-    return yield store_1.default.findOne({ userId }).lean().exec();
+    return yield store_1.default.findOne({ user: userId }).exec();
 });
 exports.findStoreByUserId = findStoreByUserId;
 const findStoreById = (id) => __awaiter(void 0, void 0, void 0, function* () {

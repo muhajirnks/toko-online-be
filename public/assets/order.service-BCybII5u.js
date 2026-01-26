@@ -1,0 +1,1 @@
+import{u as s}from"./useFetch-Ef9WPhKv.js";import{ab as e}from"./index-CoCr-Lwu.js";const u=r=>s("/api/v1/orders",{qs:r}),d=r=>e("/api/v1/orders",{body:r}),c=(r,t)=>e(`/api/v1/orders/${r}`,{method:"PUT",body:t});export{c as a,d as c,u};
