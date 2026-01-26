@@ -53,12 +53,12 @@ const bootstrap = () => __awaiter(void 0, void 0, void 0, function* () {
         app.use((0, morgan_1.default)("tiny"));
         // 3. Routes
         app.use("/api/v1", (0, v1_1.default)());
-        // FrontEnd / Static
+        // 4. FrontEnd / Static
         app.use(express_1.default.static(path_1.default.join(__dirname, "./public")));
         app.get("*", (req, res) => {
             res.sendFile(path_1.default.join(__dirname, "./public/index.html"));
         });
-        // 4. Global Error Handler
+        // 5. Global Error Handler
         app.use(globalError_1.default);
         // 5. Start Server
         app.listen(port, () => {
