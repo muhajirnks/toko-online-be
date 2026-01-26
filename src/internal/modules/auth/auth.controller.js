@@ -58,11 +58,13 @@ const logoutHandler = (req, res) => __awaiter(void 0, void 0, void 0, function* 
         httpOnly: true,
         secure: true,
         sameSite: "none",
+        path: "/",
     });
     res.clearCookie("refresh_token", {
         httpOnly: true,
         secure: true,
         sameSite: "none",
+        path: "/",
     });
     (0, success_1.successResponse)(res, {
         message: "Logout success",
