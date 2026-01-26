@@ -38,7 +38,7 @@ const bootstrap = () => __awaiter(void 0, void 0, void 0, function* () {
         app.use((0, cors_1.default)({
             credentials: true,
             origin: (origin, callback) => {
-                if (!origin || allowedOrigins.includes(origin)) {
+                if (!origin || origin == process.env.BASE_URL || allowedOrigins.includes(origin)) {
                     callback(null, origin);
                 }
                 else {
@@ -55,7 +55,7 @@ const bootstrap = () => __awaiter(void 0, void 0, void 0, function* () {
         app.use("/api/v1", (0, v1_1.default)());
         // 4. FrontEnd / Static
         app.use(express_1.default.static(path_1.default.join(__dirname, "./public")));
-        app.get("*", (req, res) => {
+        app.get("/*splat", (req, res) => {
             res.sendFile(path_1.default.join(__dirname, "./public/index.html"));
         });
         // 5. Global Error Handler
