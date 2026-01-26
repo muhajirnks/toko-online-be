@@ -1,9 +1,17 @@
-import { createToken, createUser, deleteToken, findByEmail, findToken } from "./auth.repo";
+import {
+   createToken,
+   createUser,
+   deleteToken,
+   findByEmail,
+   findToken,
+} from "./auth.repo";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import { NewBadRequestError, NewConflictError } from "@/pkg/apperror/appError";
 import { RegisterRequest } from "./auth.validation";
 import { generateRefreshToken, generateUserToken } from "@/pkg/auth/token";
+import { findStoreByUserId } from "../store/store.repo";
+import { findUserById } from "../user/user.repo";
 
 export const registerService = async (data: RegisterRequest) => {
    const existUser = await findByEmail(data.email!);
@@ -32,16 +40,24 @@ export const loginService = async (email: string, password: string) => {
    }
 
    // Store Refresh Token
-   const refToken = await createToken(user._id.toString(), generateRefreshToken());
+   const refToken = await createToken(
+      user._id.toString(),
+      generateRefreshToken(),
+   );
 
    // Generate JWT Token
-   const token = generateUserToken(refToken)
+   const token = generateUserToken(refToken);
+
+   const store = await findStoreByUserId(user._id.toString());
 
    delete user.password;
 
    return {
       token,
-      data: user,
+      data: {
+         ...user,
+         store: store || null,
+      },
    };
 };
 
@@ -52,39 +68,24 @@ export const refreshService = async (token: string) => {
       throw NewBadRequestError("Invalid refresh token");
    }
 
-   try {
-      const decoded = jwt.verify(token, process.env.JWT_REFRESH_KEY!) as { email: string };
-      const user = await findByEmail(decoded.email);
+   const user = await findUserById(storedToken.userId.toString());
 
-      if (!user) {
-         throw NewBadRequestError("User not found");
-      }
-
-      const accessToken = jwt.sign({ email: user.email }, process.env.JWT_KEY!, {
-         expiresIn: "1h",
-      });
-
-      const refreshToken = jwt.sign({ email: user.email }, process.env.JWT_REFRESH_KEY!, {
-         expiresIn: "7d",
-      });
-
-      // Update Refresh Token (Optional: rotate token)
-      await deleteToken(token);
-      await createToken(user._id.toString(), refreshToken);
-
-      delete user.password;
-
-      return {
-         token: {
-            type: "Bearer",
-            accessToken,
-            refreshToken,
-         },
-         data: user,
-      };
-   } catch (error) {
-      throw NewBadRequestError("Invalid or expired refresh token");
+   if (!user) {
+      throw NewBadRequestError("User not found");
    }
+
+   const refToken = await createToken(
+      user._id.toString(),
+      generateRefreshToken(),
+   );
+
+   // Generate JWT Token
+   const userToken = generateUserToken(refToken);
+   await deleteToken(token);
+
+   return {
+      token: userToken,
+   };
 };
 
 export const logoutService = async (token: string) => {

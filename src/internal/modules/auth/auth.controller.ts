@@ -1,7 +1,22 @@
-import { createdResponse, successResponse, tokenResponse } from "@/pkg/response/success";
-import { loginService, logoutService, refreshService, registerService } from "./auth.service";
+import {
+   createdResponse,
+   successResponse,
+   tokenResponse,
+} from "@/pkg/response/success";
+import {
+   loginService,
+   logoutService,
+   refreshService,
+   registerService,
+} from "./auth.service";
 import { Request, Response } from "express";
-import { loginSchema, logoutSchema, refreshSchema, registerSchema } from "./auth.validation";
+import {
+   loginSchema,
+   logoutSchema,
+   refreshSchema,
+   registerSchema,
+} from "./auth.validation";
+import { findStoreByUserId } from "../store/store.repo";
 
 export const registerHandler = async (req: Request, res: Response) => {
    const body = await registerSchema.validate(req.body);
@@ -29,25 +44,34 @@ export const loginHandler = async (req: Request, res: Response) => {
 };
 
 export const refreshHandler = async (req: Request, res: Response) => {
-   const { refresh_token } = await refreshSchema.validate({refresh_token: req.cookies.refresh_token});
+   const { refresh_token } = await refreshSchema.validate({
+      refresh_token: req.cookies.refresh_token,
+   });
 
-   const { token, data } = await refreshService(refresh_token);
+   const { token } = await refreshService(refresh_token);
 
    tokenResponse(res, {
-      data,
       token,
       message: "Refresh token success",
    });
 };
 
 export const getProfileHandler = async (req: Request, res: Response) => {
+   const user = req.user!.toObject();
+   const store = await findStoreByUserId(user._id.toString());
+
    successResponse(res, {
-      data: req.user?.toObject(),
+      data: {
+         ...user,
+         store: store || null,
+      },
    });
 };
 
 export const logoutHandler = async (req: Request, res: Response) => {
-   const { refresh_token } = await logoutSchema.validate({refresh_token: req.cookies.refresh_token});
+   const { refresh_token } = await logoutSchema.validate({
+      refresh_token: req.cookies.refresh_token,
+   });
 
    await logoutService(refresh_token);
 

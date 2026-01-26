@@ -5,6 +5,7 @@ import orderRoutes from "@/internal/modules/order/order.routes";
 import categoryRoutes from "@/internal/modules/category/category.routes";
 import userRoutes from "@/internal/modules/user/user.routes";
 import storeRoutes from "@/internal/modules/store/store.routes";
+import dashboardRoutes from "@/internal/modules/dashboard/dashboard.routes";
 
 const initV1Route = () => {
    const router = Router();
@@ -15,6 +16,7 @@ const initV1Route = () => {
    router.use("/categories", categoryRoutes);
    router.use("/users", userRoutes);
    router.use("/stores", storeRoutes);
+   router.use("/dashboard", dashboardRoutes);
 
    return router;
 };

@@ -5,6 +5,8 @@ export interface StoreSchema {
    _id: Types.ObjectId;
    user: Types.ObjectId;
    name: string;
+   description: string | null;
+   avatarUrl: string | null;
    updatedAt: NativeDate;
    createdAt: NativeDate;
 }
@@ -14,6 +16,14 @@ const storeSchema = new Schema<StoreSchema>(
       name: {
          type: String,
          required: true,
+      },
+      description: {
+         type: String,
+         required: false,
+      },
+      avatarUrl: {
+         type: String,
+         required: false,
       },
       user: {
          type: Schema.Types.ObjectId,

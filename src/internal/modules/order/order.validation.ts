@@ -1,8 +1,6 @@
 import * as yup from "yup";
 
 export const createOrderSchema = yup.object({
-   customerName: yup.string().required(),
-   customerEmail: yup.string().email().required(),
    items: yup
       .array()
       .of(

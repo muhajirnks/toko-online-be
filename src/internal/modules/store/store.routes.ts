@@ -6,6 +6,7 @@ import {
 } from "./store.controller";
 import authMiddleware, { authorize } from "@/internal/middleware/auth";
 import { asyncHandler } from "@/internal/middleware/async";
+import { uploadStoreAvatar } from "@/internal/middleware/upload";
 
 const router = Router();
 
@@ -13,7 +14,7 @@ router.use(authMiddleware);
 router.use(authorize(["user"]));
 
 router.get("/me", asyncHandler(getMyStore));
-router.post("/", asyncHandler(createMyStore));
-router.put("/", asyncHandler(updateMyStore));
+router.post("/", uploadStoreAvatar, asyncHandler(createMyStore));
+router.put("/", uploadStoreAvatar, asyncHandler(updateMyStore));
 
 export default router;

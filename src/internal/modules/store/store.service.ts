@@ -7,6 +7,7 @@ import { NewBadRequestError, NewNotFoundError } from "@/pkg/apperror/appError";
 import { CreateStoreRequest, UpdateStoreRequest } from "./store.validation";
 import { StoreSchema } from "@/internal/models/store";
 import mongoose from "mongoose";
+import { uploadFile } from "@/pkg/cloudinary/cloudinary";
 
 export const getMyStoreService = async (userId: string) => {
    const store = await findStoreByUserId(userId);
@@ -25,8 +26,16 @@ export const createMyStoreService = async (
       throw NewBadRequestError("User already has a store");
    }
 
+   let avatarUrl = null;
+   if (data.avatar) {
+      const upload = await uploadFile(data.avatar, "stores");
+      avatarUrl = upload.publicPath;
+   }
+
    const store: Partial<StoreSchema> = {
       name: data.name,
+      description: data.description || null,
+      avatarUrl: avatarUrl,
       user: new mongoose.Types.ObjectId(userId),
    };
 
@@ -42,5 +51,15 @@ export const updateMyStoreService = async (
       throw NewNotFoundError("Store not found");
    }
 
-   return await updateStore(store._id.toString(), { name: data.name });
+   const updatedData: Partial<StoreSchema> = {
+      name: data.name,
+      description: data.description || null,
+   };
+
+   if (data.avatar) {
+      const upload = await uploadFile(data.avatar, "stores");
+      updatedData.avatarUrl = upload.publicPath;
+   }
+
+   return await updateStore(store._id.toString(), updatedData);
 };

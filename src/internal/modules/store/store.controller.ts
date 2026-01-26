@@ -13,13 +13,19 @@ export const getMyStore = async (req: Request, res: Response) => {
 };
 
 export const createMyStore = async (req: Request, res: Response) => {
-   const body = await createStoreSchema.validate(req.body);
+   const body = await createStoreSchema.validate({
+      ...req.body,
+      avatar: req.file,
+   });
    const result = await createMyStoreService(req.user!.id, body);
    createdResponse(res, { data: result, message: "Store created successfully" });
 };
 
 export const updateMyStore = async (req: Request, res: Response) => {
-   const body = await updateStoreSchema.validate(req.body);
+   const body = await updateStoreSchema.validate({
+      ...req.body,
+      avatar: req.file,
+   });
    const result = await updateMyStoreService(req.user!.id, body);
    successResponse(res, { data: result, message: "Store updated successfully" });
 };

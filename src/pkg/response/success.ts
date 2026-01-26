@@ -15,7 +15,7 @@ export interface Token {
 export interface TokenResponse<T> {
    message: string;
    token: Token;
-   data: T;
+   data?: T;
 }
 
 export const successResponse = <T>(

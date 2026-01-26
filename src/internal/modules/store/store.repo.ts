@@ -1,7 +1,8 @@
 import Store, { StoreSchema } from "@/internal/models/store";
+import { Types } from "mongoose";
 
 export const findStoreByUserId = async (userId: string) => {
-   return await Store.findOne({ userId }).lean().exec();
+   return await Store.findOne({ user: userId }).exec();
 };
 
 export const findStoreById = async (id: string) => {

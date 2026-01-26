@@ -90,7 +90,7 @@ export const createOrderService = async (
    user: HydratedDocument<UserSchema>,
    data: CreateOrderRequest
 ) => {
-   const { items, customerName, customerEmail } = data;
+   const { items } = data;
    let totalAmount = 0;
    const orderItems = [];
 
@@ -122,8 +122,8 @@ export const createOrderService = async (
 
    const orderData: Partial<OrderSchema> = {
       userId: new mongoose.Types.ObjectId(user.id),
-      customerName,
-      customerEmail,
+      customerName: user.name,
+      customerEmail: user.email,
       items: orderItems.map((item) => ({ ...item, product: item.productId })) as any,
       totalAmount,
       status: "pending",
