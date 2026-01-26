@@ -7,7 +7,7 @@ export interface UserSchema {
    name: string;
    email: string;
    password?: string;
-   role: "admin" | "seller" | "buyer";
+   role: "admin" | "user";
    updatedAt: NativeDate;
    createdAt: NativeDate;
 }
@@ -33,8 +33,8 @@ const userSchema = new Schema<UserSchema>(
       },
       role: {
          type: String,
-         enum: ["admin", "seller", "buyer"],
-         default: "buyer",
+         enum: ["admin", "user"],
+         default: "user",
       },
    },
    { timestamps: true, versionKey: false }

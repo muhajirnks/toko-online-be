@@ -5,7 +5,7 @@ import {
    deleteOrderService,
    listOrdersService,
    getOrderByIdService,
-   updateOrderService,
+   updateOrderStatusService,
 } from "./order.service";
 import { createdResponse, paginationResponse, successResponse } from "@/pkg/response/success";
 
@@ -30,7 +30,7 @@ export const createOrderHandler = async (req: Request, res: Response) => {
 export const updateOrderHandler = async (req: Request, res: Response) => {
    const id = req.params.id as string;
    const body = await updateOrderStatusSchema.validate(req.body);
-   const data = await updateOrderService(id, body);
+   const data = await updateOrderStatusService(id, req.user!, body);
    successResponse(res, { data, message: "Order updated successfully" });
 };
 

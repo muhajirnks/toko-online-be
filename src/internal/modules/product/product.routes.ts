@@ -16,8 +16,8 @@ const productRoutes = Router();
 productRoutes.get("/", asyncHandler(listProductsHandler));
 productRoutes.get("/:id", asyncHandler(getProductByIdHandler));
 
-// Only seller can manage products
-productRoutes.use(authMiddleware, authorize(["seller"]));
+// Only user with store can manage products
+productRoutes.use(authMiddleware, authorize(["user"]));
 productRoutes.post("/", uploadProductImage, asyncHandler(createProductHandler));
 productRoutes.put("/:id", uploadProductImage, asyncHandler(updateProductHandler));
 productRoutes.delete("/:id", asyncHandler(deleteProductHandler));

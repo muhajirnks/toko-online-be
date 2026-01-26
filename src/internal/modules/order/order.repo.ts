@@ -11,7 +11,7 @@ export const findAllOrders = async (query: ListOrderRequest) => {
    })
 };
 
-export const findOrdersBySeller = async (sellerId: string, query: ListOrderRequest) => {
+export const findOrdersByStore = async (storeId: string, query: ListOrderRequest) => {
    return await Order.paginate({}, {
       page: query.page,
       limit: query.limit,
@@ -19,7 +19,7 @@ export const findOrdersBySeller = async (sellerId: string, query: ListOrderReque
       lean: true,
       populate: {
          path: "items.product",
-         match: { seller: sellerId },
+         match: { store: storeId },
       }
    })
 };

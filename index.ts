@@ -10,12 +10,11 @@ import cors from "cors";
 import path from "path";
 import initV1Route from "@/internal/routes/v1";
 import globalErrorHandler from "@/internal/middleware/globalError";
-import { initMinio } from "@/pkg/minio/minio";
 
 const bootstrap = async () => {
    try {
       // 1. Database & External Services
-      await Promise.all([connectDB(), initMinio()]);
+      await connectDB();
 
       const app = express();
       const port = process.env.PORT || 3001;

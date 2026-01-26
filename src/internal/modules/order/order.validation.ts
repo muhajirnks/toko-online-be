@@ -37,7 +37,7 @@ export const listOrderSchema = yup.object({
       .oneOf(["pending", "paid", "shipped", "completed", "cancelled"])
       .optional(),
    userId: yup.string().optional(),
-   sellerId: yup.string().optional(),
+   storeId: yup.string().optional(),
 });
 
 export type ListOrderRequest = yup.InferType<typeof listOrderSchema>;

@@ -2,12 +2,16 @@ import {
    createOrder,
    findAllOrders,
    findOrderById,
-   findOrdersBySeller,
+   findOrdersByStore,
    findOrdersByUser,
    updateOrder,
 } from "./order.repo";
 import { findProductById, updateProduct } from "../product/product.repo";
-import { NewBadRequestError, NewNotFoundError } from "@/pkg/apperror/appError";
+import {
+   NewBadRequestError,
+   NewForbiddenError,
+   NewNotFoundError,
+} from "@/pkg/apperror/appError";
 import { UserSchema } from "@/internal/models/user";
 import {
    CreateOrderRequest,
@@ -16,6 +20,7 @@ import {
 } from "./order.validation";
 import mongoose, { HydratedDocument } from "mongoose";
 import { OrderSchema } from "@/internal/models/order";
+import { findStoreByUserId } from "../store/store.repo";
 
 export interface CreateOrderInput {
    customerName: string;
@@ -34,9 +39,12 @@ export const listOrdersService = async (
    if (user.role === "admin") {
       return await findAllOrders(query);
    }
-   if (user.role === "seller") {
-      return await findOrdersBySeller(user.id, query);
+   
+   const store = await findStoreByUserId(user.id);
+   if (store) {
+      return await findOrdersByStore(store._id.toString(), query);
    }
+   
    return await findOrdersByUser(user.id, query);
 };
 
@@ -51,25 +59,31 @@ export const getOrderByIdService = async (
 
    // Check if user has access to this order
    if (
-      user.role === "buyer" &&
-      order.userId?.toString() !== user._id.toString()
+      user.role === "user" &&
+      order.userId?.toString() === user._id.toString()
    ) {
-      throw NewNotFoundError("Order not found");
+      return order;
    }
-   if (user.role === "seller") {
+   
+   if (user.role === "admin") {
+      return order;
+   }
+
+   const store = await findStoreByUserId(user.id);
+   if (store) {
       const isSellerOfAnyItem = order.items.some((item) => {
-         if (typeof item.product === "object" && "seller" in item.product) {
-            return item.product.seller.toString() === user._id.toString();
+         if (typeof item.product === "object" && "store" in item.product) {
+            return item.product.store.toString() === store._id.toString();
          }
          return false;
       });
 
-      if (!isSellerOfAnyItem) {
-         throw NewNotFoundError("Order not found");
+      if (isSellerOfAnyItem) {
+         return order;
       }
    }
 
-   return order;
+   throw NewNotFoundError("Order not found");
 };
 
 export const createOrderService = async (
@@ -118,15 +132,37 @@ export const createOrderService = async (
    return await createOrder(orderData);
 };
 
-export const updateOrderService = async (
+export const updateOrderStatusService = async (
    id: string,
+   user: HydratedDocument<UserSchema>,
    data: UpdateOrderStatusRequest
 ) => {
    const order = await findOrderById(id);
    if (!order) {
       throw NewNotFoundError("Order not found");
    }
-   return await updateOrder(id, data);
+
+   if (user.role === "admin") {
+      return await updateOrder(id, { status: data.status });
+   }
+
+   const store = await findStoreByUserId(user.id);
+   if (!store) {
+      throw NewForbiddenError("You are not authorized to update this order");
+   }
+
+   const isSellerOfAnyItem = order.items.some((item) => {
+      if (typeof item.product === "object" && "store" in item.product) {
+         return item.product.store.toString() === store._id.toString();
+      }
+      return false;
+   });
+
+   if (!isSellerOfAnyItem) {
+      throw NewForbiddenError("You are not authorized to update this order");
+   }
+
+   return await updateOrder(id, { status: data.status });
 };
 
 export const deleteOrderService = async (id: string) => {

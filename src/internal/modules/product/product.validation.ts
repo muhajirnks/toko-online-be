@@ -22,7 +22,7 @@ export const listProductSchema = yup.object({
    category: yup.string().optional(),
    minPrice: yup.number().optional().min(0),
    maxPrice: yup.number().optional().min(0),
-   sellerId: yup.string().optional(),
+   storeId: yup.string().optional(),
 });
 
 export const createProductSchema = yup.object({

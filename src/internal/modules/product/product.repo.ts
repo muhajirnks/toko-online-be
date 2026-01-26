@@ -2,17 +2,37 @@ import Product, { ProductSchema } from "@/internal/models/product";
 import { ListProductRequest } from "./product.validation";
 
 export const findAllProducts = async (query: ListProductRequest) => {
-   return await Product.paginate({}, {
+   const filter: any = {};
+
+   if (query.search) {
+      filter.name = { $regex: query.search, $options: "i" };
+   }
+
+   if (query.category) {
+      filter.category = query.category;
+   }
+
+   if (query.storeId) {
+      filter.store = query.storeId;
+   }
+
+   if (query.minPrice !== undefined || query.maxPrice !== undefined) {
+      filter.price = {};
+      if (query.minPrice !== undefined) filter.price.$gte = query.minPrice;
+      if (query.maxPrice !== undefined) filter.price.$lte = query.maxPrice;
+   }
+
+   return await Product.paginate(filter, {
       page: query.page,
       limit: query.limit,
       sort: [[query.sort, query.direction], ["_id", "desc"]],
       lean: true,
-      populate: ["category", "seller"],
+      populate: ["category", "store"],
    });
 };
 
 export const findProductById = async (id: string) => {
-   return await Product.findById(id).populate("category").populate("seller").lean().exec();
+   return await Product.findById(id).populate("category").populate("store").lean().exec();
 };
 
 export const createProduct = async (data: Partial<ProductSchema>) => {

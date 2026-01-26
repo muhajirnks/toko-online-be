@@ -7,7 +7,7 @@ import {
 } from "./product.repo";
 import { NewForbiddenError, NewNotFoundError } from "@/pkg/apperror/appError";
 import { ProductSchema } from "@/internal/models/product";
-import { presignGetUrl, uploadFile } from "@/pkg/minio/minio";
+import { uploadFile } from "@/pkg/cloudinary/cloudinary";
 import {
    CreateProductRequest,
    ListProductRequest,
@@ -15,15 +15,10 @@ import {
 } from "./product.validation";
 import mongoose, { HydratedDocument } from "mongoose";
 import { UserSchema } from "@/internal/models/user";
+import { findStoreByUserId } from "../store/store.repo";
 
 export const listProductsService = async (query: ListProductRequest) => {
    const items = await findAllProducts(query);
-   items.data = items.data.map((p) => {
-      if (p.imageUrl) {
-         p.imageUrl = process.env.MINIO_BASE_URL + "/" + p.imageUrl
-      }
-      return p;
-   });
    return items;
 };
 
@@ -33,7 +28,6 @@ export const getProductByIdService = async (id: string) => {
       throw NewNotFoundError("Product not found");
    }
 
-   product.imageUrl = process.env.MINIO_BASE_URL + "/" + product.imageUrl
    return product;
 };
 
@@ -41,19 +35,23 @@ export const createProductService = async (
    data: CreateProductRequest,
    user: HydratedDocument<UserSchema>
 ) => {
+   const store = await findStoreByUserId(user.id);
+   if (!store) {
+      throw NewNotFoundError("You must have a store to create a product");
+   }
+
    const product: Partial<ProductSchema> = {
       name: data.name,
       category: new mongoose.Types.ObjectId(data.categoryId),
       description: data.description,
       price: data.price,
-      seller: new mongoose.Types.ObjectId(user.id),
+      store: store._id,
       stock: data.stock,
    };
    const { publicPath } = await uploadFile(data.image, "products");
    product.imageUrl = publicPath;
 
    const result = await createProduct(product);
-   result.imageUrl = process.env.MINIO_BASE_URL + "/" + product.imageUrl;
 
    return result;
 };
@@ -68,32 +66,35 @@ export const updateProductService = async (
       throw NewNotFoundError("Product not found");
    }
 
-   if (product.seller.toString() !== user.id) {
+   const store = await findStoreByUserId(user.id);
+   if (!store || product.store._id.toString() !== store._id.toString()) {
       throw NewForbiddenError("You are not authorized to update this product");
    }
 
+   const updatedData: Partial<ProductSchema> = {
+      name: data.name,
+      category: new mongoose.Types.ObjectId(data.categoryId),
+      description: data.description,
+      price: data.price,
+      stock: data.stock,
+   };
+
    if (data.image) {
       const { publicPath } = await uploadFile(data.image, "products");
-      product.imageUrl = publicPath;
+      updatedData.imageUrl = publicPath;
    }
 
-   product.name = data.name;
-   product.category = new mongoose.Types.ObjectId(data.categoryId);
-   product.description = data.description;
-   product.price = data.price;
-   product.seller = new mongoose.Types.ObjectId(user.id);
-   product.stock = data.stock;
-
-   return await updateProduct(id, product);
+   return await updateProduct(id, updatedData);
 };
 
-export const deleteProductService = async (id: string, sellerId: string) => {
+export const deleteProductService = async (id: string, userId: string) => {
    const product = await findProductById(id);
    if (!product) {
       throw NewNotFoundError("Product not found");
    }
 
-   if (product.seller.toString() !== sellerId) {
+   const store = await findStoreByUserId(userId);
+   if (!store || product.store._id.toString() !== store._id.toString()) {
       throw NewForbiddenError("You are not authorized to delete this product");
    }
 

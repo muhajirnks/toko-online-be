@@ -13,15 +13,15 @@ const orderRoutes = Router();
 
 orderRoutes.use(authMiddleware);
 
-// Buyer can create orders
-orderRoutes.post("/", authorize(["buyer"]), asyncHandler(createOrderHandler));
+// User can create orders
+orderRoutes.post("/", authorize(["user"]), asyncHandler(createOrderHandler));
 
-// Admin, Seller, and Buyer can view orders (with role-based filtering in service)
-orderRoutes.get("/", authorize(["admin", "seller", "buyer"]), asyncHandler(listOrdersHandler));
-orderRoutes.get("/:id", authorize(["admin", "seller", "buyer"]), asyncHandler(getOrderByIdHandler));
+// Admin and User can view orders (with role-based filtering in service)
+orderRoutes.get("/", authorize(["admin", "user"]), asyncHandler(listOrdersHandler));
+orderRoutes.get("/:id", authorize(["admin", "user"]), asyncHandler(getOrderByIdHandler));
 
-// Only admin can update/delete orders
-orderRoutes.put("/:id", authorize(["admin"]), asyncHandler(updateOrderHandler));
+// Admin and User (with store) can update status
+orderRoutes.put("/:id", authorize(["admin", "user"]), asyncHandler(updateOrderHandler));
 orderRoutes.delete("/:id", authorize(["admin"]), asyncHandler(deleteOrderHandler));
 
 export default orderRoutes;

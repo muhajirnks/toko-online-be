@@ -5,16 +5,14 @@ import { connectDB } from "@/internal/config/database";
 import User from "@/internal/models/user";
 import Category from "@/internal/models/category";
 import Product from "@/internal/models/product";
-import { initMinio, uploadFile } from "@/pkg/minio/minio";
+import Store from "@/internal/models/store";
+import { uploadFile } from "@/pkg/cloudinary/cloudinary";
 import fs from "fs";
 import path from "path";
 
 const seed = async () => {
    try {
       await connectDB();
-      const { connection } = await import("mongoose");
-
-      await Promise.all([new Promise((resolve) => connection.on("open", resolve)), initMinio()]);
 
       console.log("Connected to database for seeding...");
       const publicImagePath = path.resolve("./public/product.jpg");
@@ -33,6 +31,7 @@ const seed = async () => {
       await User.deleteMany({});
       await Category.deleteMany({});
       await Product.deleteMany({});
+      await Store.deleteMany({});
       console.log("Cleared existing data.");
 
       // Seed Categories
@@ -56,25 +55,25 @@ const seed = async () => {
             role: "admin",
          },
          {
-            name: "Seller One",
-            email: "seller1@example.com",
+            name: "User One",
+            email: "user1@example.com",
             password: "password123",
-            role: "seller",
-         },
-         {
-            name: "Buyer One",
-            email: "buyer1@example.com",
-            password: "password123",
-            role: "buyer",
+            role: "user",
          },
       ]);
       console.log(`Seeded ${users.length} users.`);
 
-      const seller = users.find((u) => u.role === "seller");
+      // Seed Store for User One
+      const store = await Store.create({
+         name: "User One Store",
+         user: users[1]._id,
+      });
+      console.log(`Seeded store for ${users[1].name}.`);
+
       const electronics = categories.find((c) => c.name === "Electronics");
       const home = categories.find((c) => c.name === "Home & Kitchen");
 
-      if (seller && electronics && home) {
+      if (electronics && home) {
          // Seed Products
          const products = await Product.insertMany([
             {
@@ -83,7 +82,7 @@ const seed = async () => {
                price: 14000000,
                stock: 50,
                category: electronics._id,
-               seller: seller._id,
+               store: store._id,
                imageUrl: imageUrl.publicPath,
             },
             {
@@ -92,7 +91,7 @@ const seed = async () => {
                price: 15000000,
                stock: 20,
                category: electronics._id,
-               seller: seller._id,
+               store: store._id,
                imageUrl: imageUrl.publicPath,
             },
             {
@@ -101,7 +100,7 @@ const seed = async () => {
                price: 4000000,
                stock: 100,
                category: home._id,
-               seller: seller._id,
+               store: store._id,
                imageUrl: imageUrl.publicPath,
             },
          ]);

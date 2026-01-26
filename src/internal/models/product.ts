@@ -9,7 +9,7 @@ export interface ProductSchema {
    stock: number;
    imageUrl: string;
    category?: Types.ObjectId;
-   seller: Types.ObjectId;
+   store: Types.ObjectId;
    createdAt: Date;
    updatedAt: Date;
 }
@@ -26,7 +26,7 @@ const productSchema = new Schema<ProductSchema>(
          ref: "Category",
          required: true,
       },
-      seller: { type: Schema.Types.ObjectId, ref: "User", required: true },
+      store: { type: Schema.Types.ObjectId, ref: "Store", required: true },
    },
    {
       timestamps: true,
