@@ -4,7 +4,7 @@
   "description": "",
   "scripts": {
     "build": "rm -rf dist/ && tsc && tsc-alias && cp -r public/ dist/public && cp vercel.json dist/ && cp package.json dist/",
-    "build-fe": "cd ../toko-online-fe && pnpm run build && cp -r dist/ ../toko-online-be/dist/public/ && cd ../toko-online-be/dist/public && pnpm init && pnpm pkg set type=\"module\" && cd ..",
+    "build-fe": "cd ../toko-online-fe && pnpm run build && cp -r dist/. ../toko-online-be/dist/public/ && cd ../toko-online-be/dist/public && pnpm init && pnpm pkg set type=\"module\" && cd ..",
     "deploy": "gh-pages -d dist",
     "dev": "nodemon index.ts",
     "predeploy": "pnpm run build && pnpm run build-fe",
