@@ -57,12 +57,12 @@ const logoutHandler = (req, res) => __awaiter(void 0, void 0, void 0, function* 
     res.clearCookie("access_token", {
         httpOnly: true,
         secure: true,
-        sameSite: "none",
+        sameSite: "lax",
     });
     res.clearCookie("refresh_token", {
         httpOnly: true,
         secure: true,
-        sameSite: "none",
+        sameSite: "lax",
     });
     (0, success_1.successResponse)(res, {
         message: "Logout success",

@@ -26,13 +26,13 @@ const tokenResponse = (res, payload) => {
     res.cookie("access_token", token.accessToken, {
         httpOnly: true,
         secure: true,
-        sameSite: "none",
+        sameSite: "lax",
         maxAge: 5 * 60 * 60 * 1000, // 5 hours
     });
     res.cookie("refresh_token", token.refreshToken, {
         httpOnly: true,
         secure: true,
-        sameSite: "none",
+        sameSite: "lax",
         maxAge: 5 * 24 * 60 * 60 * 1000, // 5 days
     });
     return res.status(201).json({
