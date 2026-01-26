@@ -20,18 +20,22 @@ const bootstrap = async () => {
       const port = process.env.PORT || 3001;
 
       // 2. Middlewares
-      const allowedOrigins = ["http://localhost:5173", "http://localhost:80", "http://localhost"];
+      const allowedOrigins = [
+         "http://localhost:5173",
+         "http://localhost:80",
+         "http://localhost",
+      ];
       app.use(
          cors({
             credentials: true,
             origin: (origin, callback) => {
-               if (!origin || allowedOrigins.includes(origin)) {
+               if (!origin || origin == process.env.BASE_URL || allowedOrigins.includes(origin)) {
                   callback(null, origin);
                } else {
                   callback(new Error("Not allowed by CORS"));
                }
             },
-         })
+         }),
       );
 
       app.use(compression());
@@ -42,9 +46,14 @@ const bootstrap = async () => {
 
       // 3. Routes
       app.use("/api/v1", initV1Route());
-      app.use(express.static(path.join(__dirname, "./public")));
 
-      // 4. Global Error Handler
+      // 4. FrontEnd / Static
+      app.use(express.static(path.join(__dirname, "./public")));
+      app.get("/*splat", (req, res) => {
+         res.sendFile(path.join(__dirname, "./public/index.html"));
+      });
+
+      // 5. Global Error Handler
       app.use(globalErrorHandler);
 
       // 5. Start Server
