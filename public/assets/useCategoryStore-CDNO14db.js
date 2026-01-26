@@ -1,1 +1,0 @@
-import{at as t,aB as o}from"./index-ah-KVBrx.js";const s=e=>t("/api/v1/categories",{qs:e}),c=o(e=>({categories:[],isLoading:!1,error:null,fetchCategories:async()=>{e({isLoading:!0,error:null});try{const{data:a,error:r}=await s();if(r)throw r;e({categories:a?.data||[],isLoading:!1})}catch(a){e({error:a.message||"Failed to fetch categories",isLoading:!1})}}}));export{c as u};
