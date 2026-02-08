@@ -37,17 +37,16 @@ const express_1 = require("express");
 const product_controller_1 = require("./product.controller");
 const auth_1 = __importStar(require("../../../internal/middleware/auth"));
 const upload_1 = require("../../../internal/middleware/upload");
-const async_1 = require("../../../internal/middleware/async");
 const productRoutes = (0, express_1.Router)();
 // Everyone can view products (Buyer View)
-productRoutes.get("/", (0, async_1.asyncHandler)(product_controller_1.listProductsHandler));
+productRoutes.get("/", product_controller_1.listProductsHandler);
 // Seller specific routes (Protected)
-productRoutes.get("/seller", auth_1.default, (0, auth_1.authorize)(["user"]), (0, async_1.asyncHandler)(product_controller_1.listSellerProductsHandler));
+productRoutes.get("/seller", auth_1.default, (0, auth_1.authorize)(["user"]), product_controller_1.listSellerProductsHandler);
 // Public detail route
-productRoutes.get("/:id", (0, async_1.asyncHandler)(product_controller_1.getProductByIdHandler));
+productRoutes.get("/:id", product_controller_1.getProductByIdHandler);
 // Middleware for other seller management routes
 productRoutes.use(auth_1.default, (0, auth_1.authorize)(["user"]));
-productRoutes.post("/", upload_1.uploadProductImage, (0, async_1.asyncHandler)(product_controller_1.createProductHandler));
-productRoutes.put("/:id", upload_1.uploadProductImage, (0, async_1.asyncHandler)(product_controller_1.updateProductHandler));
-productRoutes.delete("/:id", (0, async_1.asyncHandler)(product_controller_1.deleteProductHandler));
+productRoutes.post("/", upload_1.uploadProductImage, product_controller_1.createProductHandler);
+productRoutes.put("/:id", upload_1.uploadProductImage, product_controller_1.updateProductHandler);
+productRoutes.delete("/:id", product_controller_1.deleteProductHandler);
 exports.default = productRoutes;

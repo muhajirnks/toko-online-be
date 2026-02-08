@@ -1,1 +1,0 @@
-import{w as e,v as s}from"./index-mMssICi4.js";function l(t){return s("MuiListItemButton",t)}const a=e("MuiListItemButton",["root","focusVisible","dense","alignItemsFlexStart","disabled","divider","gutters","selected"]);export{l as g,a as l};

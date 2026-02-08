@@ -36,14 +36,13 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
 const category_controller_1 = require("./category.controller");
 const auth_1 = __importStar(require("../../../internal/middleware/auth"));
-const async_1 = require("../../../internal/middleware/async");
 const categoryRoutes = (0, express_1.Router)();
 // Public can view categories
-categoryRoutes.get("/", (0, async_1.asyncHandler)(category_controller_1.listCategoriesHandler));
-categoryRoutes.get("/:id", (0, async_1.asyncHandler)(category_controller_1.getCategoryByIdHandler));
+categoryRoutes.get("/", category_controller_1.listCategoriesHandler);
+categoryRoutes.get("/:id", category_controller_1.getCategoryByIdHandler);
 // Only admin can manage categories
 categoryRoutes.use(auth_1.default, (0, auth_1.authorize)(["admin"]));
-categoryRoutes.post("/", (0, async_1.asyncHandler)(category_controller_1.createCategoryHandler));
-categoryRoutes.put("/:id", (0, async_1.asyncHandler)(category_controller_1.updateCategoryHandler));
-categoryRoutes.delete("/:id", (0, async_1.asyncHandler)(category_controller_1.deleteCategoryHandler));
+categoryRoutes.post("/", category_controller_1.createCategoryHandler);
+categoryRoutes.put("/:id", category_controller_1.updateCategoryHandler);
+categoryRoutes.delete("/:id", category_controller_1.deleteCategoryHandler);
 exports.default = categoryRoutes;

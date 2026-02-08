@@ -36,16 +36,15 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
 const order_controller_1 = require("./order.controller");
 const auth_1 = __importStar(require("../../../internal/middleware/auth"));
-const async_1 = require("../../../internal/middleware/async");
 const orderRoutes = (0, express_1.Router)();
 orderRoutes.use(auth_1.default);
 // User can create orders
-orderRoutes.post("/", (0, auth_1.authorize)(["user"]), (0, async_1.asyncHandler)(order_controller_1.createOrderHandler));
+orderRoutes.post("/", (0, auth_1.authorize)(["user"]), order_controller_1.createOrderHandler);
 // List orders
-orderRoutes.get("/", (0, auth_1.authorize)(["user"]), (0, async_1.asyncHandler)(order_controller_1.listBuyerOrdersHandler));
-orderRoutes.get("/seller", (0, auth_1.authorize)(["user"]), (0, async_1.asyncHandler)(order_controller_1.listSellerOrdersHandler));
-orderRoutes.get("/:id", (0, auth_1.authorize)(["admin", "user"]), (0, async_1.asyncHandler)(order_controller_1.getOrderByIdHandler));
+orderRoutes.get("/", (0, auth_1.authorize)(["user"]), order_controller_1.listBuyerOrdersHandler);
+orderRoutes.get("/seller", (0, auth_1.authorize)(["user"]), order_controller_1.listSellerOrdersHandler);
+orderRoutes.get("/:id", (0, auth_1.authorize)(["admin", "user"]), order_controller_1.getOrderByIdHandler);
 // Admin and User (with store) can update status
-orderRoutes.put("/:id", (0, auth_1.authorize)(["admin", "user"]), (0, async_1.asyncHandler)(order_controller_1.updateOrderHandler));
-orderRoutes.delete("/:id", (0, auth_1.authorize)(["admin"]), (0, async_1.asyncHandler)(order_controller_1.deleteOrderHandler));
+orderRoutes.put("/:id", (0, auth_1.authorize)(["admin", "user"]), order_controller_1.updateOrderHandler);
+orderRoutes.delete("/:id", (0, auth_1.authorize)(["admin"]), order_controller_1.deleteOrderHandler);
 exports.default = orderRoutes;

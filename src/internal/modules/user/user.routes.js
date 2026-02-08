@@ -36,12 +36,11 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
 const user_controller_1 = require("./user.controller");
 const auth_1 = __importStar(require("../../../internal/middleware/auth"));
-const async_1 = require("../../../internal/middleware/async");
 const userRoutes = (0, express_1.Router)();
 // Only admin can manage users
 userRoutes.use(auth_1.default, (0, auth_1.authorize)(["admin"]));
-userRoutes.get("/", (0, async_1.asyncHandler)(user_controller_1.listUsersHandler));
-userRoutes.get("/:id", (0, async_1.asyncHandler)(user_controller_1.getUserByIdHandler));
-userRoutes.put("/:id", (0, async_1.asyncHandler)(user_controller_1.updateUserHandler));
-userRoutes.delete("/:id", (0, async_1.asyncHandler)(user_controller_1.deleteUserHandler));
+userRoutes.get("/", user_controller_1.listUsersHandler);
+userRoutes.get("/:id", user_controller_1.getUserByIdHandler);
+userRoutes.put("/:id", user_controller_1.updateUserHandler);
+userRoutes.delete("/:id", user_controller_1.deleteUserHandler);
 exports.default = userRoutes;
