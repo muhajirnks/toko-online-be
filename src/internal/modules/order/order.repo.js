@@ -30,7 +30,7 @@ const findOrdersByStore = (storeId, query) => __awaiter(void 0, void 0, void 0, 
     }
     if (query.search) {
         filter.$or = [
-            { _id: { $regex: query.search, $options: "i" } },
+            // { _id: { $regex: query.search, $options: "i" } },
             { customerName: { $regex: query.search, $options: "i" } },
             { customerEmail: { $regex: query.search, $options: "i" } },
             { "items.name": { $regex: query.search, $options: "i" } },
@@ -62,7 +62,7 @@ const findOrdersByUser = (userId, query) => __awaiter(void 0, void 0, void 0, fu
     }
     if (query.search) {
         filter.$or = [
-            { _id: { $regex: query.search, $options: "i" } },
+            // { _id: { $regex: query.search, $options: "i" } },
             { customerName: { $regex: query.search, $options: "i" } },
             { customerEmail: { $regex: query.search, $options: "i" } },
             { "items.name": { $regex: query.search, $options: "i" } },
