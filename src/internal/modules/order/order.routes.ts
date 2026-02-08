@@ -8,23 +8,22 @@ import {
    updateOrderHandler,
 } from "./order.controller";
 import authMiddleware, { authorize } from "@/internal/middleware/auth";
-import { asyncHandler } from "@/internal/middleware/async";
 
 const orderRoutes = Router();
 
 orderRoutes.use(authMiddleware);
 
 // User can create orders
-orderRoutes.post("/", authorize(["user"]), asyncHandler(createOrderHandler));
+orderRoutes.post("/", authorize(["user"]), createOrderHandler);
 
 // List orders
-orderRoutes.get("/", authorize(["user"]), asyncHandler(listBuyerOrdersHandler));
-orderRoutes.get("/seller", authorize(["user"]), asyncHandler(listSellerOrdersHandler));
+orderRoutes.get("/", authorize(["user"]), listBuyerOrdersHandler);
+orderRoutes.get("/seller", authorize(["user"]), listSellerOrdersHandler);
 
-orderRoutes.get("/:id", authorize(["admin", "user"]), asyncHandler(getOrderByIdHandler));
+orderRoutes.get("/:id", authorize(["admin", "user"]), getOrderByIdHandler);
 
 // Admin and User (with store) can update status
-orderRoutes.put("/:id", authorize(["admin", "user"]), asyncHandler(updateOrderHandler));
-orderRoutes.delete("/:id", authorize(["admin"]), asyncHandler(deleteOrderHandler));
+orderRoutes.put("/:id", authorize(["admin", "user"]), updateOrderHandler);
+orderRoutes.delete("/:id", authorize(["admin"]), deleteOrderHandler);
 
 export default orderRoutes;

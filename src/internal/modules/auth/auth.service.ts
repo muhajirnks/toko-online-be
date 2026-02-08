@@ -5,7 +5,6 @@ import {
    findByEmail,
    findToken,
 } from "./auth.repo";
-import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import { NewBadRequestError, NewConflictError } from "@/pkg/apperror/appError";
 import { RegisterRequest } from "./auth.validation";

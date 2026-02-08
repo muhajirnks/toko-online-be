@@ -7,18 +7,17 @@ import {
    updateCategoryHandler,
 } from "./category.controller";
 import authMiddleware, { authorize } from "@/internal/middleware/auth";
-import { asyncHandler } from "@/internal/middleware/async";
 
 const categoryRoutes = Router();
 
 // Public can view categories
-categoryRoutes.get("/", asyncHandler(listCategoriesHandler));
-categoryRoutes.get("/:id", asyncHandler(getCategoryByIdHandler));
+categoryRoutes.get("/", listCategoriesHandler);
+categoryRoutes.get("/:id", getCategoryByIdHandler);
 
 // Only admin can manage categories
 categoryRoutes.use(authMiddleware, authorize(["admin"]));
-categoryRoutes.post("/", asyncHandler(createCategoryHandler));
-categoryRoutes.put("/:id", asyncHandler(updateCategoryHandler));
-categoryRoutes.delete("/:id", asyncHandler(deleteCategoryHandler));
+categoryRoutes.post("/", createCategoryHandler);
+categoryRoutes.put("/:id", updateCategoryHandler);
+categoryRoutes.delete("/:id", deleteCategoryHandler);
 
 export default categoryRoutes;

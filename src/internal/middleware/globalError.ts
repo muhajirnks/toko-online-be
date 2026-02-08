@@ -1,9 +1,18 @@
 import { Request, Response, NextFunction } from "express";
 import { AppError } from "@/pkg/apperror/appError";
-import { errorResponse, internalErrorResponse, validationErrorResponse } from "@/pkg/response/error";
+import {
+   errorResponse,
+   internalErrorResponse,
+   validationErrorResponse,
+} from "@/pkg/response/error";
 import { ValidationError } from "yup";
 
-const globalErrorHandler = (error: any, _: Request, res: Response, __: NextFunction) => {
+const globalErrorHandler = (
+   error: any,
+   _: Request,
+   res: Response,
+   __: NextFunction,
+) => {
    if (error instanceof ValidationError) {
       const errors: Record<string, string[]> = {};
       error.inner.forEach((err) => {
