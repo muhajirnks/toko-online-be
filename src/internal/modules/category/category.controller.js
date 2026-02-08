@@ -13,8 +13,9 @@ exports.deleteCategoryHandler = exports.updateCategoryHandler = exports.createCa
 const category_validation_1 = require("./category.validation");
 const category_service_1 = require("./category.service");
 const success_1 = require("../../../pkg/response/success");
+const validate_1 = require("../../../pkg/validation/validate");
 const listCategoriesHandler = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const query = yield category_validation_1.listCategorySchema.validate(req.query);
+    const query = yield (0, validate_1.validateSchema)(category_validation_1.listCategorySchema, req.query);
     const data = yield (0, category_service_1.listCategoriesService)(query);
     (0, success_1.paginationResponse)(res, data);
 });
@@ -26,14 +27,14 @@ const getCategoryByIdHandler = (req, res) => __awaiter(void 0, void 0, void 0, f
 });
 exports.getCategoryByIdHandler = getCategoryByIdHandler;
 const createCategoryHandler = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const body = yield category_validation_1.createCategorySchema.validate(req.body);
+    const body = yield (0, validate_1.validateSchema)(category_validation_1.createCategorySchema, req.body);
     const data = yield (0, category_service_1.createCategoryService)(body);
     (0, success_1.createdResponse)(res, { data, message: "Category created successfully" });
 });
 exports.createCategoryHandler = createCategoryHandler;
 const updateCategoryHandler = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const id = req.params.id;
-    const body = yield category_validation_1.updateCategorySchema.validate(req.body);
+    const body = yield (0, validate_1.validateSchema)(category_validation_1.updateCategorySchema, req.body);
     const data = yield (0, category_service_1.updateCategoryService)(id, body);
     (0, success_1.successResponse)(res, { data, message: "Category updated successfully" });
 });

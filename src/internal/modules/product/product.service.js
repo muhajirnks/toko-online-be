@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteProductService = exports.updateProductService = exports.createProductService = exports.getProductByIdService = exports.listProductsService = void 0;
+exports.deleteProductService = exports.updateProductService = exports.createProductService = exports.getProductByIdService = exports.listSellerProductsService = exports.listProductsService = void 0;
 const product_repo_1 = require("./product.repo");
 const appError_1 = require("../../../pkg/apperror/appError");
 const cloudinary_1 = require("../../../pkg/cloudinary/cloudinary");
@@ -23,6 +23,16 @@ const listProductsService = (query) => __awaiter(void 0, void 0, void 0, functio
     return items;
 });
 exports.listProductsService = listProductsService;
+const listSellerProductsService = (user, query) => __awaiter(void 0, void 0, void 0, function* () {
+    const store = yield (0, store_repo_1.findStoreByUserId)(user.id);
+    if (!store) {
+        throw (0, appError_1.NewForbiddenError)("You don't have a store yet");
+    }
+    query.storeId = store._id.toString();
+    const items = yield (0, product_repo_1.findAllProducts)(query);
+    return items;
+});
+exports.listSellerProductsService = listSellerProductsService;
 const getProductByIdService = (id) => __awaiter(void 0, void 0, void 0, function* () {
     const product = yield (0, product_repo_1.findProductById)(id);
     if (!product) {

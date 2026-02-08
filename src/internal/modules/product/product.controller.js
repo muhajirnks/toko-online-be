@@ -9,16 +9,23 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteProductHandler = exports.updateProductHandler = exports.createProductHandler = exports.getProductByIdHandler = exports.listProductsHandler = void 0;
+exports.deleteProductHandler = exports.updateProductHandler = exports.createProductHandler = exports.getProductByIdHandler = exports.listSellerProductsHandler = exports.listProductsHandler = void 0;
 const product_validation_1 = require("./product.validation");
 const product_service_1 = require("./product.service");
 const success_1 = require("../../../pkg/response/success");
+const validate_1 = require("../../../pkg/validation/validate");
 const listProductsHandler = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const query = yield product_validation_1.listProductSchema.validate(req.query);
+    const query = yield (0, validate_1.validateSchema)(product_validation_1.listProductSchema, req.query);
     const data = yield (0, product_service_1.listProductsService)(query);
     (0, success_1.paginationResponse)(res, data);
 });
 exports.listProductsHandler = listProductsHandler;
+const listSellerProductsHandler = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const query = yield (0, validate_1.validateSchema)(product_validation_1.listProductSchema, req.query);
+    const data = yield (0, product_service_1.listSellerProductsService)(req.user, query);
+    (0, success_1.paginationResponse)(res, data);
+});
+exports.listSellerProductsHandler = listSellerProductsHandler;
 const getProductByIdHandler = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const id = req.params.id;
     const data = yield (0, product_service_1.getProductByIdService)(id);
@@ -27,7 +34,7 @@ const getProductByIdHandler = (req, res) => __awaiter(void 0, void 0, void 0, fu
 exports.getProductByIdHandler = getProductByIdHandler;
 const createProductHandler = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     req.body.image = req.file;
-    const body = yield product_validation_1.createProductSchema.validate(req.body);
+    const body = yield (0, validate_1.validateSchema)(product_validation_1.createProductSchema, req.body);
     const data = yield (0, product_service_1.createProductService)(body, req.user);
     (0, success_1.createdResponse)(res, { data, message: "Product created successfully" });
 });
@@ -35,7 +42,7 @@ exports.createProductHandler = createProductHandler;
 const updateProductHandler = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const id = req.params.id;
     req.body.image = req.file;
-    const body = yield product_validation_1.updateProductSchema.validate(req.body);
+    const body = yield (0, validate_1.validateSchema)(product_validation_1.updateProductSchema, req.body);
     const data = yield (0, product_service_1.updateProductService)(id, body, req.user);
     (0, success_1.successResponse)(res, { data, message: "Product updated successfully" });
 });

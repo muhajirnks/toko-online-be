@@ -41,8 +41,9 @@ const orderRoutes = (0, express_1.Router)();
 orderRoutes.use(auth_1.default);
 // User can create orders
 orderRoutes.post("/", (0, auth_1.authorize)(["user"]), (0, async_1.asyncHandler)(order_controller_1.createOrderHandler));
-// Admin and User can view orders (with role-based filtering in service)
-orderRoutes.get("/", (0, auth_1.authorize)(["admin", "user"]), (0, async_1.asyncHandler)(order_controller_1.listOrdersHandler));
+// List orders
+orderRoutes.get("/", (0, auth_1.authorize)(["user"]), (0, async_1.asyncHandler)(order_controller_1.listBuyerOrdersHandler));
+orderRoutes.get("/seller", (0, auth_1.authorize)(["user"]), (0, async_1.asyncHandler)(order_controller_1.listSellerOrdersHandler));
 orderRoutes.get("/:id", (0, auth_1.authorize)(["admin", "user"]), (0, async_1.asyncHandler)(order_controller_1.getOrderByIdHandler));
 // Admin and User (with store) can update status
 orderRoutes.put("/:id", (0, auth_1.authorize)(["admin", "user"]), (0, async_1.asyncHandler)(order_controller_1.updateOrderHandler));

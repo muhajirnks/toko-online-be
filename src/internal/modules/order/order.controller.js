@@ -9,16 +9,23 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteOrderHandler = exports.updateOrderHandler = exports.createOrderHandler = exports.getOrderByIdHandler = exports.listOrdersHandler = void 0;
+exports.deleteOrderHandler = exports.updateOrderHandler = exports.createOrderHandler = exports.getOrderByIdHandler = exports.listSellerOrdersHandler = exports.listBuyerOrdersHandler = void 0;
 const order_validation_1 = require("./order.validation");
 const order_service_1 = require("./order.service");
 const success_1 = require("../../../pkg/response/success");
-const listOrdersHandler = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const query = yield order_validation_1.listOrderSchema.validate(req.query);
-    const data = yield (0, order_service_1.listOrdersService)(req.user, query);
+const validate_1 = require("../../../pkg/validation/validate");
+const listBuyerOrdersHandler = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const query = yield (0, validate_1.validateSchema)(order_validation_1.listOrderSchema, req.query);
+    const data = yield (0, order_service_1.listBuyerOrdersService)(req.user, query);
     (0, success_1.paginationResponse)(res, data);
 });
-exports.listOrdersHandler = listOrdersHandler;
+exports.listBuyerOrdersHandler = listBuyerOrdersHandler;
+const listSellerOrdersHandler = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const query = yield (0, validate_1.validateSchema)(order_validation_1.listOrderSchema, req.query);
+    const data = yield (0, order_service_1.listSellerOrdersService)(req.user, query);
+    (0, success_1.paginationResponse)(res, data);
+});
+exports.listSellerOrdersHandler = listSellerOrdersHandler;
 const getOrderByIdHandler = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const id = req.params.id;
     const data = yield (0, order_service_1.getOrderByIdService)(id, req.user);
@@ -26,14 +33,14 @@ const getOrderByIdHandler = (req, res) => __awaiter(void 0, void 0, void 0, func
 });
 exports.getOrderByIdHandler = getOrderByIdHandler;
 const createOrderHandler = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const body = yield order_validation_1.createOrderSchema.validate(req.body);
+    const body = yield (0, validate_1.validateSchema)(order_validation_1.createOrderSchema, req.body);
     const data = yield (0, order_service_1.createOrderService)(req.user, body);
     (0, success_1.createdResponse)(res, { data, message: "Order created successfully" });
 });
 exports.createOrderHandler = createOrderHandler;
 const updateOrderHandler = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const id = req.params.id;
-    const body = yield order_validation_1.updateOrderStatusSchema.validate(req.body);
+    const body = yield (0, validate_1.validateSchema)(order_validation_1.updateOrderStatusSchema, req.body);
     const data = yield (0, order_service_1.updateOrderStatusService)(id, req.user, body);
     (0, success_1.successResponse)(res, { data, message: "Order updated successfully" });
 });

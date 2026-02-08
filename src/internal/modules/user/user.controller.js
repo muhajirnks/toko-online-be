@@ -13,8 +13,9 @@ exports.deleteUserHandler = exports.updateUserHandler = exports.getUserByIdHandl
 const user_service_1 = require("./user.service");
 const success_1 = require("../../../pkg/response/success");
 const user_validation_1 = require("./user.validation");
+const validate_1 = require("../../../pkg/validation/validate");
 const listUsersHandler = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const query = yield user_validation_1.listUserSchema.validate(req.query);
+    const query = yield (0, validate_1.validateSchema)(user_validation_1.listUserSchema, req.query);
     const data = yield (0, user_service_1.listUsersService)(query);
     (0, success_1.paginationResponse)(res, data);
 });
@@ -27,7 +28,7 @@ const getUserByIdHandler = (req, res) => __awaiter(void 0, void 0, void 0, funct
 exports.getUserByIdHandler = getUserByIdHandler;
 const updateUserHandler = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const id = req.params.id;
-    const body = yield user_validation_1.updateUserSchema.validate(req.body);
+    const body = yield (0, validate_1.validateSchema)(user_validation_1.updateUserSchema, req.body);
     const data = yield (0, user_service_1.updateUserService)(id, body);
     (0, success_1.successResponse)(res, { data, message: "User updated successfully" });
 });

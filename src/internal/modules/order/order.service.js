@@ -12,23 +12,24 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteOrderService = exports.updateOrderStatusService = exports.createOrderService = exports.getOrderByIdService = exports.listOrdersService = void 0;
+exports.deleteOrderService = exports.updateOrderStatusService = exports.createOrderService = exports.getOrderByIdService = exports.listBuyerOrdersService = exports.listSellerOrdersService = void 0;
 const order_repo_1 = require("./order.repo");
 const product_repo_1 = require("../product/product.repo");
 const appError_1 = require("../../../pkg/apperror/appError");
 const mongoose_1 = __importDefault(require("mongoose"));
 const store_repo_1 = require("../store/store.repo");
-const listOrdersService = (user, query) => __awaiter(void 0, void 0, void 0, function* () {
-    if (user.role === "admin") {
-        return yield (0, order_repo_1.findAllOrders)(query);
-    }
+const listSellerOrdersService = (user, query) => __awaiter(void 0, void 0, void 0, function* () {
     const store = yield (0, store_repo_1.findStoreByUserId)(user.id);
-    if (store) {
-        return yield (0, order_repo_1.findOrdersByStore)(store._id.toString(), query);
+    if (!store) {
+        throw (0, appError_1.NewForbiddenError)("You don't have a store yet");
     }
+    return yield (0, order_repo_1.findOrdersByStore)(store._id.toString(), query);
+});
+exports.listSellerOrdersService = listSellerOrdersService;
+const listBuyerOrdersService = (user, query) => __awaiter(void 0, void 0, void 0, function* () {
     return yield (0, order_repo_1.findOrdersByUser)(user.id, query);
 });
-exports.listOrdersService = listOrdersService;
+exports.listBuyerOrdersService = listBuyerOrdersService;
 const getOrderByIdService = (id, user) => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
     const order = yield (0, order_repo_1.findOrderById)(id);

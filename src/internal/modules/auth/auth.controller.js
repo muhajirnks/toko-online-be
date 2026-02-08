@@ -14,8 +14,9 @@ const success_1 = require("../../../pkg/response/success");
 const auth_service_1 = require("./auth.service");
 const auth_validation_1 = require("./auth.validation");
 const store_repo_1 = require("../store/store.repo");
+const validate_1 = require("../../../pkg/validation/validate");
 const registerHandler = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const body = yield auth_validation_1.registerSchema.validate(req.body);
+    const body = yield (0, validate_1.validateSchema)(auth_validation_1.registerSchema, req.body);
     const user = yield (0, auth_service_1.registerService)(body);
     delete user.password;
     (0, success_1.createdResponse)(res, {
@@ -25,7 +26,7 @@ const registerHandler = (req, res) => __awaiter(void 0, void 0, void 0, function
 });
 exports.registerHandler = registerHandler;
 const loginHandler = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { email, password } = yield auth_validation_1.loginSchema.validate(req.body);
+    const { email, password } = yield (0, validate_1.validateSchema)(auth_validation_1.loginSchema, req.body);
     const { token, data } = yield (0, auth_service_1.loginService)(email, password);
     (0, success_1.tokenResponse)(res, {
         data,
@@ -35,7 +36,7 @@ const loginHandler = (req, res) => __awaiter(void 0, void 0, void 0, function* (
 });
 exports.loginHandler = loginHandler;
 const refreshHandler = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { refresh_token } = yield auth_validation_1.refreshSchema.validate({
+    const { refresh_token } = yield (0, validate_1.validateSchema)(auth_validation_1.refreshSchema, {
         refresh_token: req.cookies.refresh_token,
     });
     const { token } = yield (0, auth_service_1.refreshService)(refresh_token);
@@ -54,7 +55,7 @@ const getProfileHandler = (req, res) => __awaiter(void 0, void 0, void 0, functi
 });
 exports.getProfileHandler = getProfileHandler;
 const logoutHandler = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { refresh_token } = yield auth_validation_1.logoutSchema.validate({
+    const { refresh_token } = yield (0, validate_1.validateSchema)(auth_validation_1.logoutSchema, {
         refresh_token: req.cookies.refresh_token,
     });
     yield (0, auth_service_1.logoutService)(refresh_token);
