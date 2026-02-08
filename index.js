@@ -58,6 +58,9 @@ const bootstrap = () => __awaiter(void 0, void 0, void 0, function* () {
         app.get("/*splat", (req, res) => {
             res.sendFile(path_1.default.join(__dirname, "./public/index.html"));
         });
+        app.get("/health", (req, res) => {
+            res.status(200).json({ status: "OK", message: "Server is running" });
+        });
         // 5. Global Error Handler
         app.use(globalError_1.default);
         // 5. Start Server

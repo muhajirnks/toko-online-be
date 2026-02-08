@@ -1,1 +1,0 @@
-import{u as e}from"./useFetch-CAvM0gAb.js";import{ac as s}from"./index-DnXFepj0.js";const u=r=>e("/api/v1/orders",{qs:r}),d=r=>e("/api/v1/orders/seller",{qs:r}),c=r=>s("/api/v1/orders",{body:r}),i=(r,t)=>s(`/api/v1/orders/${r}`,{method:"PUT",body:t});export{i as a,u as b,c,d as u};
