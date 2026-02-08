@@ -12,28 +12,24 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.updateOrder = exports.createOrder = exports.findOrderById = exports.findOrdersByUser = exports.findOrdersByStore = exports.findAllOrders = void 0;
+exports.updateOrder = exports.createOrder = exports.findOrderById = exports.findOrdersByUser = exports.findOrdersByStore = void 0;
 const order_1 = __importDefault(require("../../../internal/models/order"));
-const findAllOrders = (query) => __awaiter(void 0, void 0, void 0, function* () {
-    return yield order_1.default.paginate({}, {
-        page: query.page,
-        limit: query.limit,
-        sort: [[query.sort, query.direction], ["_id", "desc"]],
-        lean: true,
-        populate: ["items.product"],
-    });
-});
-exports.findAllOrders = findAllOrders;
+const product_1 = __importDefault(require("../../../internal/models/product"));
 const findOrdersByStore = (storeId, query) => __awaiter(void 0, void 0, void 0, function* () {
-    return yield order_1.default.paginate({}, {
+    const products = yield product_1.default.find({ store: storeId }, "_id").lean();
+    const productIds = products.map((p) => p._id);
+    return yield order_1.default.paginate({ "items.product": { $in: productIds } }, {
         page: query.page,
         limit: query.limit,
-        sort: [[query.sort, query.direction], ["_id", "desc"]],
+        sort: [
+            [query.sort, query.direction],
+            ["_id", "desc"],
+        ],
         lean: true,
         populate: {
             path: "items.product",
-            match: { store: storeId },
-        }
+            match: { store: storeId }
+        },
     });
 });
 exports.findOrdersByStore = findOrdersByStore;

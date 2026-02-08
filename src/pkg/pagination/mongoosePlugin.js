@@ -29,9 +29,9 @@ const paginationPlugin = (schema) => {
             const totalPages = Math.ceil(totalDocs / limit);
             return {
                 meta: {
-                    currentPage: page,
+                    page: page,
                     lastPage: totalPages,
-                    perPage: limit,
+                    limit: limit,
                     total: totalDocs,
                 },
                 data: docs,
