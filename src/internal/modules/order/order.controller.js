@@ -15,13 +15,13 @@ const order_service_1 = require("./order.service");
 const success_1 = require("../../../pkg/response/success");
 const validate_1 = require("../../../pkg/validation/validate");
 const listBuyerOrdersHandler = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const query = yield (0, validate_1.validateSchema)(order_validation_1.listOrderSchema, req.query);
+    const query = yield (0, validate_1.validateSchema)(order_validation_1.listBuyerOrderSchema, req.query);
     const data = yield (0, order_service_1.listBuyerOrdersService)(req.user, query);
     (0, success_1.paginationResponse)(res, data);
 });
 exports.listBuyerOrdersHandler = listBuyerOrdersHandler;
 const listSellerOrdersHandler = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const query = yield (0, validate_1.validateSchema)(order_validation_1.listOrderSchema, req.query);
+    const query = yield (0, validate_1.validateSchema)(order_validation_1.listSellerOrderSchema, req.query);
     const data = yield (0, order_service_1.listSellerOrdersService)(req.user, query);
     (0, success_1.paginationResponse)(res, data);
 });

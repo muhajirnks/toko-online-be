@@ -33,7 +33,7 @@ var __importStar = (this && this.__importStar) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.listOrderSchema = exports.updateOrderStatusSchema = exports.createOrderSchema = void 0;
+exports.listSellerOrderSchema = exports.listBuyerOrderSchema = exports.listOrderBaseSchema = exports.updateOrderStatusSchema = exports.createOrderSchema = void 0;
 const yup = __importStar(require("yup"));
 exports.createOrderSchema = yup.object({
     items: yup
@@ -51,7 +51,7 @@ exports.updateOrderStatusSchema = yup.object({
         .oneOf(["pending", "paid", "shipped", "completed", "cancelled"])
         .required(),
 });
-exports.listOrderSchema = yup.object({
+exports.listOrderBaseSchema = {
     page: yup.number().optional().min(1).default(1),
     limit: yup.number().optional().min(1).max(100).default(10),
     sort: yup
@@ -65,6 +65,6 @@ exports.listOrderSchema = yup.object({
         .string()
         .oneOf(["pending", "paid", "shipped", "completed", "cancelled"])
         .optional(),
-    userId: yup.string().optional(),
-    storeId: yup.string().optional(),
-});
+};
+exports.listBuyerOrderSchema = yup.object(Object.assign(Object.assign({}, exports.listOrderBaseSchema), { storeId: yup.string().optional() }));
+exports.listSellerOrderSchema = yup.object(Object.assign(Object.assign({}, exports.listOrderBaseSchema), { userId: yup.string().optional() }));
