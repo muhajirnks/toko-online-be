@@ -5,7 +5,7 @@ import {
    findProductById,
    updateProduct,
 } from "./product.repo";
-import { NewForbiddenError, NewNotFoundError } from "@/pkg/apperror/appError";
+import { NewForbiddenError, NewNotFoundError, NewBadRequestError } from "@/pkg/apperror/appError";
 import { ProductSchema } from "@/internal/models/product";
 import { uploadFile } from "@/pkg/cloudinary/cloudinary";
 import {
@@ -18,6 +18,20 @@ import { UserSchema } from "@/internal/models/user";
 import { findStoreByUserId } from "../store/store.repo";
 
 export const listProductsService = async (query: ListProductRequest) => {
+   const items = await findAllProducts(query);
+   return items;
+};
+
+export const listSellerProductsService = async (
+   user: HydratedDocument<UserSchema>,
+   query: ListProductRequest
+) => {
+   const store = await findStoreByUserId(user.id);
+   if (!store) {
+      throw NewForbiddenError("You don't have a store yet");
+   }
+
+   query.storeId = store._id.toString();
    const items = await findAllProducts(query);
    return items;
 };

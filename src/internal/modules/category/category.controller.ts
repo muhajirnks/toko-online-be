@@ -16,9 +16,10 @@ import {
    paginationResponse,
    successResponse,
 } from "@/pkg/response/success";
+import { validateSchema } from "@/pkg/validation/validate";
 
 export const listCategoriesHandler = async (req: Request, res: Response) => {
-   const query = await listCategorySchema.validate(req.query);
+   const query = await validateSchema(listCategorySchema, req.query);
    const data = await listCategoriesService(query);
    paginationResponse(res, data);
 };
@@ -30,14 +31,14 @@ export const getCategoryByIdHandler = async (req: Request, res: Response) => {
 };
 
 export const createCategoryHandler = async (req: Request, res: Response) => {
-   const body = await createCategorySchema.validate(req.body);
+   const body = await validateSchema(createCategorySchema, req.body);
    const data = await createCategoryService(body);
    createdResponse(res, { data, message: "Category created successfully" });
 };
 
 export const updateCategoryHandler = async (req: Request, res: Response) => {
    const id = req.params.id as string;
-   const body = await updateCategorySchema.validate(req.body);
+   const body = await validateSchema(updateCategorySchema, req.body);
    const data = await updateCategoryService(id, body);
    successResponse(res, { data, message: "Category updated successfully" });
 };

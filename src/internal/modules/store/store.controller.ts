@@ -6,6 +6,7 @@ import {
 } from "./store.service";
 import { createdResponse, successResponse } from "@/pkg/response/success";
 import { createStoreSchema, updateStoreSchema } from "./store.validation";
+import { validateSchema } from "@/pkg/validation/validate";
 
 export const getMyStore = async (req: Request, res: Response) => {
    const result = await getMyStoreService(req.user!.id);
@@ -13,7 +14,7 @@ export const getMyStore = async (req: Request, res: Response) => {
 };
 
 export const createMyStore = async (req: Request, res: Response) => {
-   const body = await createStoreSchema.validate({
+   const body = await validateSchema(createStoreSchema, {
       ...req.body,
       avatar: req.file,
    });
@@ -22,7 +23,7 @@ export const createMyStore = async (req: Request, res: Response) => {
 };
 
 export const updateMyStore = async (req: Request, res: Response) => {
-   const body = await updateStoreSchema.validate({
+   const body = await validateSchema(updateStoreSchema, {
       ...req.body,
       avatar: req.file,
    });

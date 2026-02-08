@@ -1,8 +1,9 @@
 import Product, { ProductSchema } from "@/internal/models/product";
 import { ListProductRequest } from "./product.validation";
+import { QueryFilter } from "mongoose";
 
 export const findAllProducts = async (query: ListProductRequest) => {
-   const filter: any = {};
+   const filter: QueryFilter<ProductSchema> = {};
 
    if (query.search) {
       filter.name = { $regex: query.search, $options: "i" };

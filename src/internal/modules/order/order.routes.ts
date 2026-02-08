@@ -2,7 +2,8 @@ import { Router } from "express";
 import {
    createOrderHandler,
    deleteOrderHandler,
-   listOrdersHandler,
+   listBuyerOrdersHandler,
+   listSellerOrdersHandler,
    getOrderByIdHandler,
    updateOrderHandler,
 } from "./order.controller";
@@ -16,8 +17,10 @@ orderRoutes.use(authMiddleware);
 // User can create orders
 orderRoutes.post("/", authorize(["user"]), asyncHandler(createOrderHandler));
 
-// Admin and User can view orders (with role-based filtering in service)
-orderRoutes.get("/", authorize(["admin", "user"]), asyncHandler(listOrdersHandler));
+// List orders
+orderRoutes.get("/", authorize(["user"]), asyncHandler(listBuyerOrdersHandler));
+orderRoutes.get("/seller", authorize(["user"]), asyncHandler(listSellerOrdersHandler));
+
 orderRoutes.get("/:id", authorize(["admin", "user"]), asyncHandler(getOrderByIdHandler));
 
 // Admin and User (with store) can update status

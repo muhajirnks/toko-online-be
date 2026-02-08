@@ -45,9 +45,9 @@ const paginationPlugin = (schema: Schema) => {
 
       return {
          meta: {
-            currentPage: page,
+            page: page,
             lastPage: totalPages,
-            perPage: limit,
+            limit: limit,
             total: totalDocs,
          },
          data: docs as T[],

@@ -3,6 +3,7 @@ import {
    createProductHandler,
    deleteProductHandler,
    listProductsHandler,
+   listSellerProductsHandler,
    getProductByIdHandler,
    updateProductHandler,
 } from "./product.controller";
@@ -12,12 +13,18 @@ import { asyncHandler } from "@/internal/middleware/async";
 
 const productRoutes = Router();
 
-// Everyone can view products
+// Everyone can view products (Buyer View)
 productRoutes.get("/", asyncHandler(listProductsHandler));
+
+// Seller specific routes (Protected)
+productRoutes.get("/seller", authMiddleware, authorize(["user"]), asyncHandler(listSellerProductsHandler));
+
+// Public detail route
 productRoutes.get("/:id", asyncHandler(getProductByIdHandler));
 
-// Only user with store can manage products
+// Middleware for other seller management routes
 productRoutes.use(authMiddleware, authorize(["user"]));
+
 productRoutes.post("/", uploadProductImage, asyncHandler(createProductHandler));
 productRoutes.put("/:id", uploadProductImage, asyncHandler(updateProductHandler));
 productRoutes.delete("/:id", asyncHandler(deleteProductHandler));

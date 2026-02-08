@@ -8,8 +8,8 @@ export interface PaginationQS {
 
 export interface PaginationMeta {
    total: number;
-   perPage: number;
-   currentPage: number;
+   limit: number;
+   page: number;
    lastPage: number;
 }
 

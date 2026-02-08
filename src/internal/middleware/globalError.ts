@@ -8,10 +8,10 @@ const globalErrorHandler = (error: any, _: Request, res: Response, __: NextFunct
       const errors: Record<string, string[]> = {};
       error.inner.forEach((err) => {
          if (err.path) {
-            errors[err.path] = [err.message];
+            errors[err.path] = err.errors;
          }
       });
-      return validationErrorResponse(res, "Validation Error", errors);
+      return validationErrorResponse(res, error.errors[0], errors);
    }
 
    if (error instanceof AppError) {

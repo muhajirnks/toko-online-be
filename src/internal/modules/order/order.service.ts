@@ -1,6 +1,5 @@
 import {
    createOrder,
-   findAllOrders,
    findOrderById,
    findOrdersByStore,
    findOrdersByUser,
@@ -15,7 +14,8 @@ import {
 import { UserSchema } from "@/internal/models/user";
 import {
    CreateOrderRequest,
-   ListOrderRequest,
+   ListBuyerOrderRequest,
+   ListSellerOrderRequest,
    UpdateOrderStatusRequest,
 } from "./order.validation";
 import mongoose, { HydratedDocument } from "mongoose";
@@ -32,19 +32,21 @@ export interface CreateOrderInput {
    userId?: string;
 }
 
-export const listOrdersService = async (
+export const listSellerOrdersService = async (
    user: HydratedDocument<UserSchema>,
-   query: ListOrderRequest
+   query: ListSellerOrderRequest
 ) => {
-   if (user.role === "admin") {
-      return await findAllOrders(query);
-   }
-   
    const store = await findStoreByUserId(user.id);
-   if (store) {
-      return await findOrdersByStore(store._id.toString(), query);
+   if (!store) {
+      throw NewForbiddenError("You don't have a store yet");
    }
-   
+   return await findOrdersByStore(store._id.toString(), query);
+};
+
+export const listBuyerOrdersService = async (
+   user: HydratedDocument<UserSchema>,
+   query: ListBuyerOrderRequest
+) => {
    return await findOrdersByUser(user.id, query);
 };
 

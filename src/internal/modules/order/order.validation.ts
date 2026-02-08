@@ -20,7 +20,7 @@ export const updateOrderStatusSchema = yup.object({
       .required(),
 });
 
-export const listOrderSchema = yup.object({
+export const listOrderBaseSchema = {
    page: yup.number().optional().min(1).default(1),
    limit: yup.number().optional().min(1).max(100).default(10),
    sort: yup
@@ -34,11 +34,20 @@ export const listOrderSchema = yup.object({
       .string()
       .oneOf(["pending", "paid", "shipped", "completed", "cancelled"])
       .optional(),
-   userId: yup.string().optional(),
+};
+
+export const listBuyerOrderSchema = yup.object({
+   ...listOrderBaseSchema,
    storeId: yup.string().optional(),
 });
 
-export type ListOrderRequest = yup.InferType<typeof listOrderSchema>;
+export const listSellerOrderSchema = yup.object({
+   ...listOrderBaseSchema,
+   userId: yup.string().optional(),
+});
+
+export type ListBuyerOrderRequest = yup.InferType<typeof listBuyerOrderSchema>;
+export type ListSellerOrderRequest = yup.InferType<typeof listSellerOrderSchema>;
 export type CreateOrderRequest = yup.InferType<typeof createOrderSchema>;
 export type UpdateOrderStatusRequest = yup.InferType<
    typeof updateOrderStatusSchema

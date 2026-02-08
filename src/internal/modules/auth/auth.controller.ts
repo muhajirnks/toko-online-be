@@ -17,9 +17,10 @@ import {
    registerSchema,
 } from "./auth.validation";
 import { findStoreByUserId } from "../store/store.repo";
+import { validateSchema } from "@/pkg/validation/validate";
 
 export const registerHandler = async (req: Request, res: Response) => {
-   const body = await registerSchema.validate(req.body);
+   const body = await validateSchema(registerSchema, req.body);
 
    const user = await registerService(body as any);
 
@@ -32,7 +33,7 @@ export const registerHandler = async (req: Request, res: Response) => {
 };
 
 export const loginHandler = async (req: Request, res: Response) => {
-   const { email, password } = await loginSchema.validate(req.body);
+   const { email, password } = await validateSchema(loginSchema, req.body);
 
    const { token, data } = await loginService(email, password);
 
@@ -44,7 +45,7 @@ export const loginHandler = async (req: Request, res: Response) => {
 };
 
 export const refreshHandler = async (req: Request, res: Response) => {
-   const { refresh_token } = await refreshSchema.validate({
+   const { refresh_token } = await validateSchema(refreshSchema, {
       refresh_token: req.cookies.refresh_token,
    });
 
@@ -69,7 +70,7 @@ export const getProfileHandler = async (req: Request, res: Response) => {
 };
 
 export const logoutHandler = async (req: Request, res: Response) => {
-   const { refresh_token } = await logoutSchema.validate({
+   const { refresh_token } = await validateSchema(logoutSchema, {
       refresh_token: req.cookies.refresh_token,
    });
 

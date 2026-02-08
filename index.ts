@@ -47,6 +47,10 @@ const bootstrap = async () => {
       // 3. Routes
       app.use("/api/v1", initV1Route());
 
+      app.get("/health", (req, res) => {
+         res.status(200).json({ status: "OK", message: "Server is running" });
+      });
+
       // 4. FrontEnd / Static
       app.use(express.static(path.join(__dirname, "./public")));
       app.get("/*splat", (req, res) => {

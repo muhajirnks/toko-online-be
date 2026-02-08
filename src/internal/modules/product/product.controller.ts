@@ -4,14 +4,22 @@ import {
    createProductService,
    deleteProductService,
    listProductsService,
+   listSellerProductsService,
    getProductByIdService,
    updateProductService,
 } from "./product.service";
 import { createdResponse, paginationResponse, successResponse } from "@/pkg/response/success";
+import { validateSchema } from "@/pkg/validation/validate";
 
 export const listProductsHandler = async (req: Request, res: Response) => {
-   const query = await listProductSchema.validate(req.query);
+   const query = await validateSchema(listProductSchema, req.query);
    const data = await listProductsService(query);
+   paginationResponse(res, data);
+};
+
+export const listSellerProductsHandler = async (req: Request, res: Response) => {
+   const query = await validateSchema(listProductSchema, req.query);
+   const data = await listSellerProductsService(req.user!, query);
    paginationResponse(res, data);
 };
 
@@ -23,7 +31,7 @@ export const getProductByIdHandler = async (req: Request, res: Response) => {
 
 export const createProductHandler = async (req: Request, res: Response) => {
    req.body.image = req.file;
-   const body = await createProductSchema.validate(req.body);
+   const body = await validateSchema(createProductSchema, req.body);
    const data = await createProductService(body, req.user!);
    createdResponse(res, { data, message: "Product created successfully" });
 };
@@ -31,7 +39,7 @@ export const createProductHandler = async (req: Request, res: Response) => {
 export const updateProductHandler = async (req: Request, res: Response) => {
    const id = req.params.id as string;
    req.body.image = req.file;
-   const body = await updateProductSchema.validate(req.body);
+   const body = await validateSchema(updateProductSchema, req.body);
    const data = await updateProductService(id, body, req.user!);
    successResponse(res, { data, message: "Product updated successfully" });
 };
