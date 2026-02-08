@@ -1,1 +1,0 @@
-import{u as e}from"./useFetch-rD5-S8G8.js";import{ac as s}from"./index-BVSAmIrd.js";const d=r=>e("/api/v1/orders",{qs:r}),u=r=>e("/api/v1/orders/seller",{qs:r}),c=r=>s("/api/v1/orders",{method:"POST",body:r}),i=(r,t)=>s(`/api/v1/orders/${r}`,{method:"PUT",body:t});export{i as a,d as b,c,u};
