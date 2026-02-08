@@ -16,7 +16,6 @@ exports.updateOrder = exports.createOrder = exports.findOrderById = exports.find
 const order_1 = __importDefault(require("../../../internal/models/order"));
 const product_1 = __importDefault(require("../../../internal/models/product"));
 const findOrdersByStore = (storeId, query) => __awaiter(void 0, void 0, void 0, function* () {
-    // 1. Ambil semua product ID yang dimiliki oleh store tersebut
     const products = yield product_1.default.find({ store: storeId }, "_id").lean();
     const productIds = products.map((p) => p._id);
     const filter = {
