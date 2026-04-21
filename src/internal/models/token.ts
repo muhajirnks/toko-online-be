@@ -1,3 +1,4 @@
+import { PaginateModel } from "@/pkg/pagination/mongoosePlugin";
 import { Schema, Types, model } from "mongoose";
 
 export interface TokenSchema {
@@ -29,6 +30,6 @@ const tokenSchema = new Schema<TokenSchema>(
    { timestamps: true, versionKey: false }
 );
 
-const Token = model("Token", tokenSchema);
+const Token = model<TokenSchema, PaginateModel<TokenSchema>>("Token", tokenSchema);
 
 export default Token;
